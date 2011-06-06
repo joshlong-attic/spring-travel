@@ -11,6 +11,9 @@ import java.util.List;
  * a booking.
  */
 public interface BookingService {
+
+
+
 	/**
 	 * @param username the user name
 	 * @return the user
@@ -26,6 +29,8 @@ public interface BookingService {
 	 * @return their bookings
 	 */
 	List<Booking> findBookings(String username);
+
+	Booking findBookingById(Long id) ;
 
 	/**
 	 * Find hotels available for booking by some criteria.

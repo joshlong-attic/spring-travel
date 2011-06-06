@@ -20,7 +20,7 @@ import java.util.HashSet;
 
 public class BookingMarshallingTests {
 
-	public static void main(String args[]) throws Throwable {
+/*	public static void main(String args[]) throws Throwable {
 
 		ApplicationContext applicationContext = new AnnotationConfigApplicationContext(RestConfiguration.class);
 		Jaxb2Marshaller jaxb2Marshaller = applicationContext.getBean(Jaxb2Marshaller.class);
@@ -67,5 +67,5 @@ public class BookingMarshallingTests {
 			}
 		}
 		return w.toString();
-	}
+	}*/
 }

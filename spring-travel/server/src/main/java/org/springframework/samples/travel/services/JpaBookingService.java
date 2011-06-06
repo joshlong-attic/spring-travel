@@ -30,9 +30,20 @@ import java.util.List;
 @SuppressWarnings("unchecked")
 public class JpaBookingService implements BookingService {
 
+	private EntityManager em;
+
 	private Log log = LogFactory.getLog(getClass());
 
-	private EntityManager em;
+	@Transactional (readOnly = true)
+	public User findUserById(Long id) {
+	return em.find(User.class, id);
+	}
+
+	@Transactional (readOnly = true)
+	public Booking findBookingById(Long id) {
+		return em.find( Booking.class, id  ) ;
+	}
+
 
 
 	/**

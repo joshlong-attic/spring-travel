@@ -7,11 +7,9 @@ import java.io.Serializable;
 /**
  * A backing bean for the main hotel search form. Encapsulates the criteria
  * needed to perform a hotel search.
- *
+ * <p/>
  * This object is annotated with JAXB 2 annotations so that it may be marshalled using the Spring OXM JAXB2 {@link org.springframework.oxm.jaxb.Jaxb2Marshaller}
  * which is used in our RESTful {@link org.springframework.samples.travel.rest.HotelsRestController}.
- *
- *
  */
 @XmlRootElement
 public class SearchCriteria implements Serializable {

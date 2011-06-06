@@ -13,9 +13,10 @@ create table HOTELS (
 
 create table CUSTOMERS (
     USERNAME varchar not null,
-    ENABLED boolean,
-    NAME varchar ,
-    PASSWORD varchar ,
+    ENABLED boolean not null,
+    NAME varchar not null,
+    EMAIL varchar not null,
+    PASSWORD varchar not null ,
     primary key (username)
 );
 

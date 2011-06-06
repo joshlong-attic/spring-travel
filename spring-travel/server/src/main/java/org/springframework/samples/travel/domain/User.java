@@ -20,15 +20,24 @@ public class User implements Serializable {
 
 	// important for consideration in Spring Security
 	private boolean enabled;
-
+	private String email ;
 	private String password;
-
 	private String name;
 
 	@XmlAttribute
 	@Column
 	public boolean isEnabled() {
 		return enabled;
+	}
+
+	@XmlAttribute
+	@Column
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
 	}
 
 	public void setEnabled(boolean enabled) {
@@ -64,7 +73,6 @@ public class User implements Serializable {
 		this.username = username;
 	}
 
-	@XmlAttribute
 	@Column
 	public String getPassword() {
 		return password;

@@ -1,5 +1,6 @@
 package org.springframework.samples.travel.services.integration;
 
+import org.apache.commons.collections.map.HashedMap;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -30,6 +31,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -87,13 +89,15 @@ public class EmailNotificationService implements NotificationService {
 	}
 
 	// called by Spring Integration as it dequeues mesages from the message broker
-	public void sendEmail(final Message<Map<String, String>> inboundEmailFromMq) throws Exception {
+	public void sendEmail(final Message<Object> inboundEmailFromMq) throws Exception {
+
+		Map<String,String> ht=  (Hashtable<String,String>)inboundEmailFromMq.getPayload();
 
 		final String to = inboundEmailFromMq.getHeaders().get(MailHeaders.TO, String.class);
 		final String subject = inboundEmailFromMq.getHeaders().get(MailHeaders.SUBJECT, String.class);
 
-		final String html = inboundEmailFromMq.getPayload().get("html");
-		final String txt = inboundEmailFromMq.getPayload().get("txt");
+		final String html =(String) ht.get("html");
+		final String txt = (String) ht.get("txt");
 
 
 		this.mailSender.send(new MimeMessagePreparator() {

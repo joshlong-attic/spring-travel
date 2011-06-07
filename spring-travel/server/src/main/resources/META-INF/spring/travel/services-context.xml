@@ -4,6 +4,7 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xmlns:int-mail="http://www.springframework.org/schema/integration/mail"
         xmlns:int-jms ="http://www.springframework.org/schema/integration/jms"
+        xmlns:int-amqp="http://www.springframework.org/schema/integration/amqp"
         xmlns:integration="http://www.springframework.org/schema/integration"
         xmlns:tx="http://www.springframework.org/schema/tx"
         xmlns:context="http://www.springframework.org/schema/context"
@@ -13,6 +14,7 @@
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd
 		http://www.springframework.org/schema/integration/mail http://www.springframework.org/schema/integration/mail/spring-integration-mail-2.0.xsd
 		http://www.springframework.org/schema/integration/jms http://www.springframework.org/schema/integration/jms/spring-integration-jms-2.0.xsd
+		http://www.springframework.org/schema/integration/amqp http://www.springframework.org/schema/integration/amqp/spring-integration-amqp-2.0.xsd
 		http://www.springframework.org/schema/integration http://www.springframework.org/schema/integration/spring-integration-2.0.xsd
      ">
 
@@ -20,17 +22,18 @@
 
     <context:property-placeholder location = "classpath:/ds.standalone.properties"/>
 
+    <tx:annotation-driven transaction-manager="transactionManager"/>
+
     <integration:gateway service-interface="org.springframework.samples.travel.services.integration.NotificationGateway" default-request-channel="enqueuedEmails" />
 
     <integration:channel id="enqueuedEmails"/>
     <integration:channel id="dequeuedEmails"/>
     <integration:channel id="preparedEmails"/>
 
-    <int-jms:outbound-channel-adapter channel="enqueuedEmails" destination-name="notifications" connection-factory="connectionFactory"  />
+    <int-amqp:outbound-channel-adapter  channel="enqueuedEmails" exchange-name="${amqp.notification.exchange}"
+                                        routing-key="${amqp.notification.exchange}" amqp-template="rabbitTemplate"  />
 
-    <tx:annotation-driven transaction-manager="transactionManager"/>
-
-    <int-jms:message-driven-channel-adapter destination-name="notifications" channel="dequeuedEmails" connection-factory="connectionFactory"/>
+    <int-amqp:inbound-channel-adapter channel="dequeuedEmails" queue-names="${amqp.notification.queue}" message-converter="jsonMessageConverter" connection-factory="connectionFactory"/>
 
     <int-mail:header-enricher input-channel="dequeuedEmails" output-channel="preparedEmails">
         <int-mail:from value="${notifications.email.from}"/>

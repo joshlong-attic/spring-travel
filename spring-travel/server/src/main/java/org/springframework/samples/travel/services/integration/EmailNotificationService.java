@@ -46,23 +46,21 @@ public class EmailNotificationService implements NotificationService {
 	private Resource textConfirmation;
 
 	private Log log = LogFactory.getLog(getClass());
-	@Autowired
-	private BookingService bookingService;
-	@Autowired
-	private NotificationGateway notificationGateway;
-	@Autowired
-	private VelocityEngine velocityEngine;
 
-	@Autowired
-	private JavaMailSender mailSender;
+	@Autowired private BookingService bookingService;
+	@Autowired private NotificationGateway notificationGateway;
+	@Autowired private VelocityEngine velocityEngine;
+	@Autowired private JavaMailSender mailSender;
 
-	@Value("${notifications.confirmation.subject}")
-	private String confirmationSubject;
+	// default email fragments
+	@Value("${notifications.confirmation.subject}") private String confirmationSubject;
+	@Value("${notifications.email.from}") private String emailFrom;
 
 	private Map<Resource, String> cachedTemplates = new ConcurrentHashMap<Resource, String>();
 
 	@PostConstruct
 	public void start() throws Exception {
+		// read the templates in as strings and cache the results
 		cachedTemplates.put(this.textConfirmation, readTemplate(textConfirmation));
 		cachedTemplates.put(this.htmlConfirmation, readTemplate(htmlConfirmation));
 	}
@@ -88,9 +86,7 @@ public class EmailNotificationService implements NotificationService {
 		return stringWriter.toString();
 	}
 
-	@Value("${notifications.email.from}")
-	private String emailFrom;
-
+	// called by Spring Integration as it dequeues mesages from the message broker
 	public void sendEmail(final Message<Map<String, String>> inboundEmailFromMq) throws Exception {
 
 		final String to = inboundEmailFromMq.getHeaders().get(MailHeaders.TO, String.class);
@@ -130,7 +126,7 @@ public class EmailNotificationService implements NotificationService {
 
 	@Override
 	public void sendReminderNotification(String userId, long bookingId) {
-
+		// todo
 	}
 
 

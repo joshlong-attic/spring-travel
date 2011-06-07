@@ -20,7 +20,10 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.jms.connection.CachingConnectionFactory;
 import org.springframework.jms.connection.JmsTransactionManager;
 import org.springframework.jms.core.JmsTemplate;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
+import org.springframework.ui.velocity.VelocityEngineFactoryBean;
 
 import javax.jms.ConnectionFactory;
 import java.util.HashMap;
@@ -31,7 +34,8 @@ import java.util.Properties;
 public class IntegrationConfiguration {
 
 
-	@Value("${broker.url}") private String brokerUrl;
+	@Value("${broker.url}")
+	private String brokerUrl;
 
 	@Bean
 	public ConnectionFactory connectionFactory() {
@@ -50,37 +54,58 @@ public class IntegrationConfiguration {
 		return new JmsTemplate(this.connectionFactory());
 	}
 
+	 @Value("${notifications.email.host}") private String emailHost = "smtp.gmail.com";
 
-	private String emailHost = "smtp.gmail.com" ;
-	private int emailPort = 465;
-	private String emailProtocol = "smtps" ;
-	private String emailUsername   ,
-			emailPassword  ;
+	@Value("${notifications.email.port}") private int emailPort = 465;
+
+	@Value("${notifications.email.protocol}") private String emailProtocol = "smtps";
+
+	@Value("${notifications.email.username}") private String emailUsername ;
+
+	@Value("${notifications.email.password}") private String emailPassword  ;
+
 
 	@Bean
-	public Map<String,String> emailProperties(){
-		Map<String,String> props = new HashMap<String, String>();
-		props.put("mail.smtps.auth", true +"");
-		props.put("mail.smtps.starttls.enable",true +"");
-		return props ;
+	public VelocityEngineFactoryBean velocityEngineFactoryBean (){
+		VelocityEngineFactoryBean  velocityEngineFactoryBean = new VelocityEngineFactoryBean () ;
+
+		Map<String,Object> velocityProperties = new HashMap<String, Object>() ;
+		velocityProperties .put("resource.loader", "class") ;
+		velocityProperties.put(" class.resource.loader.class" , "org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader");
+
+
+
+
+//		velocityEngineFactoryBean.setVelocityPropertiesMap( velocityProperties );
+
+		return velocityEngineFactoryBean ;
 	}
 
-
+	@Bean
+	public Map<String, String> emailProperties() {
+		Map<String, String> props = new HashMap<String, String>();
+		props.put("mail.smtps.auth", true + "");
+		props.put("mail.smtps.starttls.enable", true + "");
+		return props;
+	}
 
 	@Bean
-	public JavaMailSenderImpl javaMailSender (){
-		JavaMailSenderImpl  javaMailSender = new JavaMailSenderImpl();
-		javaMailSender.setHost( this.emailHost);
+	public JavaMailSender javaMailSender() {
+		JavaMailSenderImpl javaMailSender = new JavaMailSenderImpl();
+		javaMailSender.setHost(this.emailHost);
 		javaMailSender.setPassword(this.emailPassword);
 		javaMailSender.setUsername(this.emailUsername);
 		javaMailSender.setPort(emailPort);
+		javaMailSender.setProtocol(this.emailProtocol);
 
 		Properties properties = new Properties();
 		properties.putAll(emailProperties());
 		javaMailSender.setJavaMailProperties(properties);
 
-		return javaMailSender ;
+		return javaMailSender;
 	}
+
+
 
 /*
 	@Value("${broker.url}")

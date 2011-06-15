@@ -2,6 +2,8 @@ package org.springframework.samples.travel.services;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.samples.travel.domain.Booking;
 import org.springframework.samples.travel.domain.Hotel;
 import org.springframework.samples.travel.domain.User;
@@ -30,21 +32,27 @@ import java.util.List;
 @SuppressWarnings("unchecked")
 public class JpaBookingService implements BookingService {
 
+
+	/**
+	 * Region names
+	 */
+	static final private String HOTELS_REGION = "hotels";
+	static final private String BOOKING_REGION = "bookings";
+	static final private String USER_REGION = "users";
+
 	private EntityManager em;
 
 	private Log log = LogFactory.getLog(getClass());
 
-	@Transactional (readOnly = true)
+	@Transactional(readOnly = true)
 	public User findUserById(Long id) {
-	return em.find(User.class, id);
+		return em.find(User.class, id);
 	}
 
-	@Transactional (readOnly = true)
+	@Transactional(readOnly = true)
 	public Booking findBookingById(Long id) {
-		return em.find( Booking.class, id  ) ;
+		return em.find(Booking.class, id);
 	}
-
-
 
 	/**
 	 * this is provided by the {@link org.springframework.orm.jpa.LocalEntityManagerFactoryBean} which is configured by the managing container (Spring).
@@ -55,6 +63,7 @@ public class JpaBookingService implements BookingService {
 	public void setEntityManager(EntityManager em) {
 		this.em = em;
 	}
+
 
 	@Transactional(readOnly = true)
 	public List<Booking> findBookings(String username) {
@@ -86,10 +95,10 @@ public class JpaBookingService implements BookingService {
 		Expression<Double> price = from.get("price");
 
 		Predicate predicate = criteriaBuilder.or(
-				criteriaBuilder.like(criteriaBuilder.lower(city), pattern),
-				criteriaBuilder.like(criteriaBuilder.lower(zip), pattern),
-				criteriaBuilder.like(criteriaBuilder.lower(address), pattern),
-				criteriaBuilder.like(criteriaBuilder.lower(name), pattern));
+				                                        criteriaBuilder.like(criteriaBuilder.lower(city), pattern),
+				                                        criteriaBuilder.like(criteriaBuilder.lower(zip), pattern),
+				                                        criteriaBuilder.like(criteriaBuilder.lower(address), pattern),
+				                                        criteriaBuilder.like(criteriaBuilder.lower(name), pattern));
 
 		if (criteria.getMaximumPrice() > 0) {
 			predicate = criteriaBuilder.and(predicate, criteriaBuilder.lessThanOrEqualTo(price, criteria.getMaximumPrice()));
@@ -108,11 +117,14 @@ public class JpaBookingService implements BookingService {
 		return hotels;
 	}
 
+
+	@Cacheable(value = HOTELS_REGION)
 	@Transactional(readOnly = true)
 	public Hotel findHotelById(Long id) {
 		return em.find(Hotel.class, id);
 	}
 
+	@Cacheable(value = BOOKING_REGION, key = "#0")
 	@Transactional
 	public Booking createBooking(Long hotelId, String username) {
 		Hotel hotel = em.find(Hotel.class, hotelId);
@@ -129,6 +141,7 @@ public class JpaBookingService implements BookingService {
 		em.merge(booking);
 	}
 
+	@CacheEvict(BOOKING_REGION)
 	@Transactional
 	public void cancelBooking(Long id) {
 		Booking booking = em.find(Booking.class, id);
@@ -139,24 +152,23 @@ public class JpaBookingService implements BookingService {
 	}
 
 	// helpers
-
 	private String getSearchPattern(SearchCriteria criteria) {
 		if (StringUtils.hasText(criteria.getSearchString())) {
-			return "%"
-					+ criteria.getSearchString().toLowerCase()
-					.replace('*', '%') + "%";
+			return "%" + criteria.getSearchString().toLowerCase().replace('*', '%') + "%";
 		} else {
 			return "'%'";
 		}
 	}
 
+	@Cacheable( value = USER_REGION ,key = "#0")
 	public User findUser(String username) {
-		return (User) em.createQuery(
-				"select u from User u where u.username = :username")
-				.setParameter("username", username).getSingleResult();
+		return (User) em.createQuery( "select u from User u where u.username = :username")
+						  .setParameter("username", username)
+						  .getSingleResult();
 	}
 
 	@Override
+	@Cacheable( value = USER_REGION ,key = "#0")
 	public User login(String u, String pw) {
 		return findUser(u);
 	}

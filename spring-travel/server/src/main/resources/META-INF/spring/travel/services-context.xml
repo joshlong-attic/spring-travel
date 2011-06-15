@@ -2,69 +2,86 @@
 <beans
         xmlns="http://www.springframework.org/schema/beans"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:gfe="http://www.springframework.org/schema/gemfire" xmlns:cache="http://www.springframework.org/schema/cache"
         xmlns:int-mail="http://www.springframework.org/schema/integration/mail"
-        xmlns:int-jms ="http://www.springframework.org/schema/integration/jms"
+        xmlns:int-jms="http://www.springframework.org/schema/integration/jms"
         xmlns:int-amqp="http://www.springframework.org/schema/integration/amqp"
         xmlns:integration="http://www.springframework.org/schema/integration"
         xmlns:tx="http://www.springframework.org/schema/tx"
-          xmlns:security="http://www.springframework.org/schema/security"
+        xmlns:util="http://www.springframework.org/schema/util"
+
+        xmlns:security="http://www.springframework.org/schema/security"
         xmlns:context="http://www.springframework.org/schema/context"
-       xsi:schemaLocation="
+        xsi:schemaLocation="
 		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd
+        http://www.springframework.org/schema/gemfire http://www.springframework.org/schema/gemfire/spring-gemfire.xsd
 		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.1.xsd
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd
 		http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.0.4.xsd
+		http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache.xsd
 		http://www.springframework.org/schema/integration/mail http://www.springframework.org/schema/integration/mail/spring-integration-mail-2.0.xsd
 		http://www.springframework.org/schema/integration/jms http://www.springframework.org/schema/integration/jms/spring-integration-jms-2.0.xsd
 		http://www.springframework.org/schema/integration/amqp http://www.springframework.org/schema/integration/amqp/spring-integration-amqp-2.0.xsd
 		http://www.springframework.org/schema/integration http://www.springframework.org/schema/integration/spring-integration-2.0.xsd
      ">
 
+    <context:property-placeholder location="classpath:/ds.standalone.properties"/>
+
+    <gfe:cache properties-ref="props" id="c"/>
+
+    <gfe:transaction-manager cache-ref="c"/>
+
+    <gfe:replicated-region id="usersRegion" cache-ref="c"/>
+    <gfe:replicated-region id="hotelsRegion" cache-ref="c"/>
+    <gfe:replicated-region id="bookingsRegion" cache-ref="c"/>
+
+
     <context:component-scan base-package="org.springframework.samples.travel.services"/>
 
-    <context:property-placeholder location = "classpath:/ds.standalone.properties"/>
+    <util:properties id="props" location="classpath:/gfe-cache.properties"/>
+
+    <!-- setup the Spring cache mechanism
+    -->
+    <cache:annotation-driven cache-manager="gemfireCacheManager"/>
+
+
 
     <tx:annotation-driven transaction-manager="transactionManager"/>
 
-
     <!-- global security-->
     <security:http>
-         <security:form-login login-page="/users/login" login-processing-url="/users/login/authenticate" default-target-url="/hotels" authentication-failure-url="/users/login?login_error=1"/>
-         <security:logout logout-url="/users/logout" logout-success-url="/users/logoutSuccess"/>
-     </security:http>
+        <security:form-login login-page="/users/login" login-processing-url="/users/login/authenticate" default-target-url="/hotels" authentication-failure-url="/users/login?login_error=1"/>
+        <security:logout logout-url="/users/logout" logout-success-url="/users/logoutSuccess"/>
+    </security:http>
 
-     <!--
-          Define local authentication provider, a real app would use an external provider (JDBC, LDAP, CAS, etc): see import.sql for the nitty gritty DDL
+    <!--
+              Define local authentication provider, a real app would use an external provider (JDBC, LDAP, CAS, etc): see import.sql for the nitty gritty DDL
 
-          usernames/passwords are in the database TRAVEL.CUSTOMERS, with MD5 encoded passwords.
-              keith/melbourne
-              erwin/leuven
-              jeremy/atlanta
-              scott/rochester
-              josh/la
-      -->
-     <security:authentication-manager>
-         <security:authentication-provider>
-             <security:password-encoder hash="md5"/>
-             <security:jdbc-user-service data-source-ref="dataSource"  />
-         </security:authentication-provider>
-     </security:authentication-manager>
-
-
-    <!-- stuff -->
+              usernames/passwords are in the database TRAVEL.CUSTOMERS, with MD5 encoded passwords.
+                  keith/melbourne
+                  erwin/leuven
+                  jeremy/atlanta
+                  scott/rochester
+                  josh/la
+          -->
+    <security:authentication-manager>
+        <security:authentication-provider>
+            <security:password-encoder hash="md5"/>
+            <security:jdbc-user-service data-source-ref="dataSource"/>
+        </security:authentication-provider>
+    </security:authentication-manager>
 
 
-
-    <integration:gateway service-interface="org.springframework.samples.travel.services.integration.NotificationGateway" default-request-channel="enqueuedEmails" />
-
+    <integration:gateway service-interface="org.springframework.samples.travel.services.integration.NotificationGateway" default-request-channel="enqueuedEmails"/>
 
 
     <integration:channel id="enqueuedEmails"/>
     <integration:channel id="dequeuedEmails"/>
     <integration:channel id="preparedEmails"/>
 
-    <int-amqp:outbound-channel-adapter  channel="enqueuedEmails" exchange-name="${amqp.notification.exchange}"
-                                        routing-key="${amqp.notification.exchange}" amqp-template="rabbitTemplate"  />
+    <int-amqp:outbound-channel-adapter channel="enqueuedEmails" exchange-name="${amqp.notification.exchange}"
+                                       routing-key="${amqp.notification.exchange}" amqp-template="rabbitTemplate"/>
 
     <int-amqp:inbound-channel-adapter channel="dequeuedEmails" queue-names="${amqp.notification.queue}" message-converter="jsonMessageConverter" connection-factory="connectionFactory"/>
 
@@ -72,6 +89,6 @@
         <int-mail:from value="${notifications.email.from}"/>
     </int-mail:header-enricher>
 
-    <integration:service-activator input-channel="preparedEmails" ref="emailNotificationService" method="sendEmail" />
+    <integration:service-activator input-channel="preparedEmails" ref="emailNotificationService" method="sendEmail"/>
 
 </beans>

@@ -1,10 +1,15 @@
 package org.springframework.samples.travel.services;
 
+import com.gemstone.gemfire.cache.Cache;
 import org.hibernate.cache.HashtableCacheProvider;
 import org.hibernate.dialect.Dialect;
 import org.hibernate.dialect.H2Dialect;
 import org.hibernate.ejb.HibernatePersistence;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.gemfire.GemfireCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.Resource;
@@ -94,5 +99,15 @@ public class ServicesConfiguration {
 		lef.setPersistenceProviderClass(HibernatePersistence.class);
 		lef.setPersistenceXmlLocation(getPersistenceXmlLocation());
 		return lef;
+	}
+
+	@Autowired
+	@Qualifier("c") private Cache gemfireCache;
+
+	@Bean
+	public CacheManager gemfireCacheManager() {
+		GemfireCacheManager cacheManager = new GemfireCacheManager();
+		cacheManager.setGemfireCache(this.gemfireCache);
+		return cacheManager ;
 	}
 }

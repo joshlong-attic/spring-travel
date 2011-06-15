@@ -3,11 +3,15 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns="http://www.springframework.org/schema/beans"
      xmlns:security="http://www.springframework.org/schema/security"
-     xmlns:tx="http://www.springframework.org/schema/tx" xmlns:context="http://www.springframework.org/schema/context"
+     xmlns:tx="http://www.springframework.org/schema/tx"
+     xmlns:context="http://www.springframework.org/schema/context"
        xmlns:wf="http://www.springframework.org/schema/webflow-config"
-       xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd
-		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
-		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.0.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd http://www.springframework.org/schema/webflow-config http://www.springframework.org/schema/webflow-config/spring-webflow-config-2.0.xsd">
+       xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.1.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+		http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.0.4.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd
+		 http://www.springframework.org/schema/webflow-config http://www.springframework.org/schema/webflow-config/spring-webflow-config-2.0.xsd">
 
 
     <context:component-scan base-package="org.springframework.samples.travel.web"/>
@@ -49,27 +53,6 @@
     <mvc:view-controller path="/users/logoutSuccess"/>
 
 
-    <security:http>
-        <security:form-login login-page="/users/login" login-processing-url="/users/login/authenticate" default-target-url="/hotels" authentication-failure-url="/users/login?login_error=1"/>
-        <security:logout logout-url="/users/logout" logout-success-url="/users/logoutSuccess"/>
-    </security:http>
-
-    <!--
-         Define local authentication provider, a real app would use an external provider (JDBC, LDAP, CAS, etc): see import.sql for the nitty gritty DDL
-
-         usernames/passwords are in the database TRAVEL.CUSTOMERS, with MD5 encoded passwords.
-             keith/melbourne
-             erwin/leuven
-             jeremy/atlanta
-             scott/rochester
-             josh/la
-     -->
-    <security:authentication-manager>
-        <security:authentication-provider>
-            <security:password-encoder hash="md5"/>
-            <security:jdbc-user-service data-source-ref="dataSource"  />
-        </security:authentication-provider>
-    </security:authentication-manager>
 
 
 

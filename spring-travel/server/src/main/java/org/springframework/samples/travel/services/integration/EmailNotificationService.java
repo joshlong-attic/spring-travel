@@ -1,6 +1,5 @@
 package org.springframework.samples.travel.services.integration;
 
-import org.apache.commons.collections.map.HashedMap;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -49,14 +48,20 @@ public class EmailNotificationService implements NotificationService {
 
 	private Log log = LogFactory.getLog(getClass());
 
-	@Autowired private BookingService bookingService;
-	@Autowired private NotificationGateway notificationGateway;
-	@Autowired private VelocityEngine velocityEngine;
-	@Autowired private JavaMailSender mailSender;
+	@Autowired
+	private BookingService bookingService;
+	@Autowired
+	private NotificationGateway notificationGateway;
+	@Autowired
+	private VelocityEngine velocityEngine;
+	@Autowired
+	private JavaMailSender mailSender;
 
 	// default email fragments
-	@Value("${notifications.confirmation.subject}") private String confirmationSubject;
-	@Value("${notifications.email.from}") private String emailFrom;
+	@Value("${notifications.confirmation.subject}")
+	private String confirmationSubject;
+	@Value("${notifications.email.from}")
+	private String emailFrom;
 
 	private Map<Resource, String> cachedTemplates = new ConcurrentHashMap<Resource, String>();
 
@@ -88,16 +93,17 @@ public class EmailNotificationService implements NotificationService {
 		return stringWriter.toString();
 	}
 
+	@SuppressWarnings("unchecked")
 	// called by Spring Integration as it dequeues mesages from the message broker
 	public void sendEmail(final Message<Object> inboundEmailFromMq) throws Exception {
 
-		Map<String,String> ht=  (Hashtable<String,String>)inboundEmailFromMq.getPayload();
+		Map<String, String> ht = (Hashtable<String, String>) inboundEmailFromMq.getPayload();
 
 		final String to = inboundEmailFromMq.getHeaders().get(MailHeaders.TO, String.class);
 		final String subject = inboundEmailFromMq.getHeaders().get(MailHeaders.SUBJECT, String.class);
 
-		final String html =(String) ht.get("html");
-		final String txt = (String) ht.get("txt");
+		final String html = ht.get("html");
+		final String txt = ht.get("txt");
 
 
 		this.mailSender.send(new MimeMessagePreparator() {
@@ -113,17 +119,16 @@ public class EmailNotificationService implements NotificationService {
 
 				BodyPart textPart = new MimeBodyPart();
 				textPart.setContent(txt, "text/plain; charset=\"us-ascii\""); // sets type to "text/plain"
-				textPart.setHeader("Content-Transfer-Encoding" , "7bit");
+				textPart.setHeader("Content-Transfer-Encoding", "7bit");
 
 				BodyPart htmlBP = new MimeBodyPart();
 				htmlBP.setContent(html, "text/html; charset=\"us-ascii\"");
-				htmlBP.setHeader("Content-Transfer-Encoding" , "7bit");
+				htmlBP.setHeader("Content-Transfer-Encoding", "7bit");
 
 				mp.addBodyPart(textPart);
 				mp.addBodyPart(htmlBP);
 
 				mesg.setContent(mp);
-
 			}
 		});
 	}

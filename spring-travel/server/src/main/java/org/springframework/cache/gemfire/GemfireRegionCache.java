@@ -2,6 +2,7 @@ package org.springframework.cache.gemfire;
 
 import com.gemstone.gemfire.cache.Region;
 import org.springframework.cache.Cache;
+import org.springframework.cache.interceptor.DefaultValueWrapper;
 import org.springframework.util.Assert;
 
 /**
@@ -11,7 +12,7 @@ import org.springframework.util.Assert;
  *
  * @author Josh Long
  * @see org.springframework.cache.Cache
- */
+ */           @Deprecated
 public class GemfireRegionCache implements Cache {
 
 	private volatile Region<?, ?> region;
@@ -20,20 +21,6 @@ public class GemfireRegionCache implements Cache {
 	 * holds a value (any value, including nulls)
 	 * {@link ValueWrapper}
 	 */
-	static private class GemfireValueWrapper implements ValueWrapper {
-
-		private Object value;
-
-		private GemfireValueWrapper(Object v) {
-			this.value = v;
-		}
-
-		@Override
-		public Object get() {
-			return this.value;
-		}
-
-	}
 
 	@Override
 	public String getName() {
@@ -47,7 +34,13 @@ public class GemfireRegionCache implements Cache {
 
 	@Override
 	public ValueWrapper get(Object key) {
-		return new GemfireValueWrapper(this.region.get(key));
+
+		Object result = this.region.get(key) ;
+		if(null ==result )
+			return null ;
+		return new DefaultValueWrapper(result) ;
+
+		///return new GemfireValueWrapper(this.region.get(key));
 	}
 
 	@Override

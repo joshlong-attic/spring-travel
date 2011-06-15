@@ -16,7 +16,7 @@
         <org.cloudfoundry-version>0.5.0-BUILD-SNAPSHOT</org.cloudfoundry-version>
         <org.slf4j-version>1.6.1</org.slf4j-version>
         <!--<org.springframework-version>3.1.0.M2</org.springframework-version>-->
-        <org.springframework-version>3.1.0.M2</org.springframework-version>
+        <org.springframework-version>3.1.0.M1</org.springframework-version>       <!--staying at 3.1.0.M1 in order to retain Spring Gemfire snapshot compatability-->
         <!--<org.springframework-version>3.0.5.RELEASE</org.springframework-version>-->
         <!--3.1.0.M1-->
         <spring.integration.version>2.0.4.RELEASE</spring.integration.version>
@@ -27,7 +27,7 @@
             <dependency>
                 <groupId>org.springframework.data.gemfire</groupId>
                 <artifactId>spring-gemfire</artifactId>
-                <version>1.0.1.RELEASE</version>
+                <version>1.1.0.BUILD-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.velocity</groupId>

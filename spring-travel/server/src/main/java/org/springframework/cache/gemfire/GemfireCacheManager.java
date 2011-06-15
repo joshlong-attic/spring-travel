@@ -16,7 +16,7 @@ import java.util.Set;
  *
  * @author Josh Long
  * @see org.springframework.cache.CacheManager
- */
+ */                    @Deprecated
 public class GemfireCacheManager extends AbstractCacheManager {
 
 	// Regions

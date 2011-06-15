@@ -36,9 +36,9 @@ public class JpaBookingService implements BookingService {
 	/**
 	 * Region names
 	 */
-	static final private String HOTELS_REGION = "hotels";
-	static final private String BOOKING_REGION = "bookings";
-	static final private String USER_REGION = "users";
+	static final private String HOTELS_REGION = "hotelsRegion";
+	static final private String BOOKING_REGION = "bookingsRegion";
+	static final private String USER_REGION = "usersRegion";
 
 	private EntityManager em;
 
@@ -124,7 +124,7 @@ public class JpaBookingService implements BookingService {
 		return em.find(Hotel.class, id);
 	}
 
-	@Cacheable(value = BOOKING_REGION, key = "#0")
+	@Cacheable(value = BOOKING_REGION, key = "#p0")
 	@Transactional
 	public Booking createBooking(Long hotelId, String username) {
 		Hotel hotel = em.find(Hotel.class, hotelId);
@@ -160,7 +160,7 @@ public class JpaBookingService implements BookingService {
 		}
 	}
 
-	@Cacheable( value = USER_REGION ,key = "#0")
+	@Cacheable( value = USER_REGION ,key  = "#p0")
 	public User findUser(String username) {
 		return (User) em.createQuery( "select u from User u where u.username = :username")
 						  .setParameter("username", username)
@@ -168,7 +168,7 @@ public class JpaBookingService implements BookingService {
 	}
 
 	@Override
-	@Cacheable( value = USER_REGION ,key = "#0")
+	@Cacheable( value = USER_REGION ,key  = "#p0")
 	public User login(String u, String pw) {
 		return findUser(u);
 	}

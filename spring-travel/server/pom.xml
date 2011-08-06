@@ -9,16 +9,12 @@
     <version>1.0.0-BUILD-SNAPSHOT</version>
     <properties>
         <java-version>1.6</java-version>
-        <!--<org.springframework-version>3.0.5.RELEASE</org.springframework-version>-->
         <org.springwebflow-version>2.2.1.RELEASE</org.springwebflow-version>
         <org.springsecurity-version>3.0.5.RELEASE</org.springsecurity-version>
         <org.aspectj-version>1.6.8</org.aspectj-version>
         <org.cloudfoundry-version>0.5.0-BUILD-SNAPSHOT</org.cloudfoundry-version>
         <org.slf4j-version>1.6.1</org.slf4j-version>
-        <!--<org.springframework-version>3.1.0.M2</org.springframework-version>-->
-        <org.springframework-version>3.1.0.M1</org.springframework-version>       <!--staying at 3.1.0.M1 in order to retain Spring Gemfire snapshot compatability-->
-        <!--<org.springframework-version>3.0.5.RELEASE</org.springframework-version>-->
-        <!--3.1.0.M1-->
+        <org.springframework-version>3.1.0.M1</org.springframework-version>
         <spring.integration.version>2.0.4.RELEASE</spring.integration.version>
         <spring.integration.amqp.version>2.1.0.BUILD-SNAPSHOT</spring.integration.amqp.version>
     </properties>
@@ -27,7 +23,7 @@
             <dependency>
                 <groupId>org.springframework.data.gemfire</groupId>
                 <artifactId>spring-gemfire</artifactId>
-                <version>1.1.0.BUILD-SNAPSHOT</version>
+                <version>1.1.0.M1</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.velocity</groupId>
@@ -380,28 +376,40 @@
         </dependency>
     </dependencies>
     <repositories>
-        <!-- For testing against latest Spring snapshots -->
-        <repository>
+     <repository>
             <id>org.springframework.maven.snapshot</id>
             <name>Spring Maven Snapshot Repository</name>
             <url>http://maven.springframework.org/snapshot</url>
             <releases>
-                <enabled>false</enabled>
+                <enabled>true</enabled>
             </releases>
             <snapshots>
                 <enabled>true</enabled>
             </snapshots>
         </repository>
-        <!-- For developing against latest Spring milestones -->
-        <repository>
+         <repository>
             <id>org.springframework.maven.milestone</id>
             <name>Spring Maven Milestone Repository</name>
             <url>http://maven.springframework.org/milestone</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
             <snapshots>
-                <enabled>false</enabled>
+                <enabled>true</enabled>
             </snapshots>
         </repository>
 
+        <repository>
+            <id>dist-gemstone</id><url>http://dist.gemstone.com/maven/release/</url>
+        </repository>
+        <repository>
+            <id>s2-release</id>
+            <url>http://repository.springsource.com/maven/bundles/release</url>
+        </repository>
+        <repository>
+            <id>s2-external</id>
+            <url>http://repository.springsource.com/maven/bundles/external</url>
+        </repository>
         <!-- For Hibernate -->
         <repository>
             <id>org.jboss.repository.releases</id>

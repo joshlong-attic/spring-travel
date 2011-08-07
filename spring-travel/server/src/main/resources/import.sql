@@ -1,7 +1,7 @@
 
 create table HOTELS (
   ID bigint not null,
-  PRICE double ,
+  PRICE decimal(6,2) ,
   NAME varchar ,
   ADDRESS varchar ,
   CITY varchar ,
@@ -68,11 +68,11 @@ create table group_members (
 
 create view USERS AS SELECT * FROM CUSTOMERS ;
 
-insert into customers (username, name, enabled, password) values ('keith', 'Keith',true,'417c7382b16c395bc25b5da1398cf076');
-insert into customers (username, name, enabled, password) values ('erwin', 'Erwin',true,'12430911a8af075c6f41c6976af22b09');
-insert into customers (username, name, enabled, password) values ('jeremy', 'Jeremy',true,'57c6cbff0d421449be820763f03139eb');
-insert into customers (username, name, enabled, password) values ('scott', 'Scott',true,'942f2339bf50796de535a384f0d1af3e');
-insert into customers (username, name, enabled, password) values ('josh', 'Josh',true,'c9089f3c9adaf0186f6ffb1ee8d6501c');
+insert into customers (username, name, enabled, password, email) values ('keith', 'Keith',true,'417c7382b16c395bc25b5da1398cf076','keith@email.com');
+insert into customers (username, name, enabled, password, email) values ('erwin', 'Erwin',true,'12430911a8af075c6f41c6976af22b09','erwin@email.com');
+insert into customers (username, name, enabled, password, email) values ('jeremy', 'Jeremy',true,'57c6cbff0d421449be820763f03139eb','jeremy@email.com');
+insert into customers (username, name, enabled, password, email) values ('scott', 'Scott',true,'942f2339bf50796de535a384f0d1af3e', 'scott@email.com);
+insert into customers (username, name, enabled, password, email) values ('josh', 'Josh',true,'c9089f3c9adaf0186f6ffb1ee8d6501c','josh@email.com');
 
 INSERT INTO AUTHORITIES(username, authority) SELECT username, 'ROLE_USER' from CUSTOMERS ;
 INSERT INTO AUTHORITIES(username, authority) VALUES ( 'keith', 'ROLE_SUPERVISOR') ;

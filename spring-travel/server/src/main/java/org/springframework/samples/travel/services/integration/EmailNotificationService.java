@@ -20,6 +20,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
 import javax.annotation.PostConstruct;
+import javax.inject.Inject;
 import javax.mail.BodyPart;
 import javax.mail.Multipart;
 import javax.mail.internet.InternetAddress;
@@ -43,23 +44,20 @@ public class EmailNotificationService implements NotificationService {
 	@Value("classpath:/templates/confirmation-html.vm")
 	private Resource htmlConfirmation;
 
+	private Log log = LogFactory.getLog(getClass());
+
+	@Inject BookingService bookingService;
+
+	@Inject NotificationGateway notificationGateway;
+	@Inject VelocityEngine velocityEngine;
+	@Inject JavaMailSender mailSender;
+
+	@Value("${notifications.confirmation.subject}")
+	private String confirmationSubject;
+
 	@Value("classpath:/templates/confirmation-txt.vm")
 	private Resource textConfirmation;
 
-	private Log log = LogFactory.getLog(getClass());
-
-	@Autowired
-	private BookingService bookingService;
-	@Autowired
-	private NotificationGateway notificationGateway;
-	@Autowired
-	private VelocityEngine velocityEngine;
-	@Autowired
-	private JavaMailSender mailSender;
-
-	// default email fragments
-	@Value("${notifications.confirmation.subject}")
-	private String confirmationSubject;
 	@Value("${notifications.email.from}")
 	private String emailFrom;
 

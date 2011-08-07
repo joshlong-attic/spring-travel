@@ -1,9 +1,12 @@
-package org.springframework.samples.travel.web;
+package org.springframework.samples.travel.config.web;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.js.ajax.AjaxUrlBasedViewResolver;
+import org.springframework.samples.travel.web.BookingFlowHandler;
+import org.springframework.web.servlet.config.annotation.*;
 import org.springframework.web.servlet.view.tiles2.TilesConfigurer;
 import org.springframework.webflow.definition.registry.FlowDefinitionRegistry;
 import org.springframework.webflow.executor.FlowExecutor;
@@ -13,20 +16,39 @@ import org.springframework.webflow.mvc.servlet.FlowHandlerMapping;
 import org.springframework.webflow.mvc.view.FlowAjaxTilesView;
 import org.springframework.webflow.security.SecurityFlowExecutionListener;
 
+import javax.inject.Inject;
 import java.util.Arrays;
 
 /**
  * Sets up all artifacts related to the web
  */
 @Configuration
-public class WebConfiguration {
+@EnableWebMvc
+@ComponentScan({"org.springframework.samples.travel.rest","org.springframework.samples.travel.web"})
+public class WebConfiguration  extends WebMvcConfigurerAdapter {
+	@Override
+	public void configureDefaultServletHandling(DefaultServletHandlerConfigurer configurer) {
+		 configurer.enable();
+	}
+
+	@Override
+	public void configureResourceHandling(ResourceConfigurer configurer) {
+		 configurer.addPathMapping("/resources/**").addResourceLocation("/resources/");
+	}
+
+	@Override
+	public void configureViewControllers(ViewControllerConfigurer configurer) {
+		configurer.mapViewName("/", "home");
+		configurer.mapViewNameByConvention("/users/login");
+		configurer.mapViewNameByConvention("/users/logout");
+		configurer.mapViewNameByConvention("/users/logoutSuccess");
+	}
 
 
-	@Autowired
-	private FlowExecutor flowExecutor;
 
-	@Autowired
-	private FlowDefinitionRegistry flowDefinitionRegistry;
+	@Inject private FlowExecutor flowExecutor;
+
+	@Inject  private FlowDefinitionRegistry flowDefinitionRegistry;
 
 	@Bean(name = "hotels/booking")
 	public BookingFlowHandler bookingFlowHandler() {

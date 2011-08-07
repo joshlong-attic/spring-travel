@@ -11,11 +11,13 @@
         <java-version>1.6</java-version>
         <org.springwebflow-version>2.2.1.RELEASE</org.springwebflow-version>
         <org.springsecurity-version>3.0.5.RELEASE</org.springsecurity-version>
-        <org.aspectj-version>1.6.8</org.aspectj-version>
+        <org.aspectj-version>1.6.9</org.aspectj-version>
+<!--
         <org.cloudfoundry-version>0.5.0-BUILD-SNAPSHOT</org.cloudfoundry-version>
+-->
         <org.slf4j-version>1.6.1</org.slf4j-version>
-        <org.springframework-version>3.1.0.M1</org.springframework-version>
-        <spring.integration.version>2.0.4.RELEASE</spring.integration.version>
+        <org.springframework-version>3.1.0.M2</org.springframework-version>
+        <spring.integration.version>2.1.0.BUILD-SNAPSHOT</spring.integration.version>
         <spring.integration.amqp.version>2.1.0.BUILD-SNAPSHOT</spring.integration.amqp.version>
     </properties>
     <dependencyManagement>
@@ -40,11 +42,11 @@
                 <artifactId>spring-core</artifactId>
                 <version>${org.springframework-version}</version>
             </dependency>
-            <dependency>
+           <!-- <dependency>
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-jms</artifactId>
                 <version>${org.springframework-version}</version>
-            </dependency>
+            </dependency>-->
             <dependency>
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-context-support</artifactId>
@@ -65,14 +67,6 @@
     </dependencyManagement>
     <dependencies>
 
-        <!-- cloudfoundry
-        <dependency>
-            <groupId>org.cloudfoundry</groupId>
-            <artifactId>runtime</artifactId>
-            <version>${org.cloudfoundry-version}</version>
-        </dependency>
-
-            -->
 
         <dependency>
             <groupId>javax.activation</groupId>
@@ -86,22 +80,7 @@
             <version>1.4.1</version>
         </dependency>
 
-        <!-- &lt;!&ndash; Activemq&ndash;&gt;
-        <dependency>
-            <groupId>org.apache.activemq</groupId>
-            <artifactId>activemq-core</artifactId>
-            <version>5.4.2</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.activemq</groupId>
-            <artifactId>activemq-optional</artifactId>
-            <version>5.4.2</version>
-        </dependency>
--->
-        <!-- Spring -->
-
-        <!-- gemfire -->
-        <dependency>
+  <dependency>
             <groupId>org.springframework.data.gemfire</groupId>
             <artifactId>spring-gemfire</artifactId>
 
@@ -115,25 +94,18 @@
             <groupId>org.springframework.integration</groupId>
             <artifactId>spring-integration-jms</artifactId>
             <version>${spring.integration.version}</version>
-
         </dependency>
         <dependency>
             <groupId>org.springframework.integration</groupId>
             <artifactId>spring-integration-mail</artifactId>
             <version>${spring.integration.version}</version>
-
         </dependency>
-
         <dependency>
             <groupId>org.springframework.integration</groupId>
             <artifactId>spring-integration-amqp</artifactId>
-            <!--
-                todo document the AMQP version dependency
-                this version will be updated when the sandbox adapter's folded into Spring integration 2.1 and then we can version the whole project uniformly.
-                Until then, you need to <code>git clone git://git.springsource.org/spring-integration/sandbox.git; cd spring-integration-amqp; mvn clean install </code> to get this working.
-            -->
-            <version>${spring.integration.amqp.version}</version>
+            <version>${spring.integration.version}</version>
         </dependency>
+
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>

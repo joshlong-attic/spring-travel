@@ -51,7 +51,7 @@ public class HotelsRestController {
 	@RequestMapping(value = "/bookings/{user}", method = RequestMethod.GET)
 	@ResponseBody
 	public Bookings bookingsForUser(@PathVariable("user") String user) {
-		return fromResults(this.bookingService.findBookings(user));
+		return fromBookingResults(this.bookingService.findBookings(user));
 	}
 
 	//http://localhost:8080/ws/hotel/1
@@ -97,7 +97,7 @@ public class HotelsRestController {
 		SearchCriteria searchCriteria = new SearchCriteria();
 		searchCriteria.setMaximumPrice(maxPrice);
 		searchCriteria.setSearchString(query);
-		return fromResults(bookingService.findHotels(searchCriteria));
+		return fromHotelResults(bookingService.findHotels(searchCriteria));
 	}
 
 	/*
@@ -152,11 +152,11 @@ public class HotelsRestController {
 		return b;
 	}
 
-	private Bookings fromResults(Collection<Booking> bookingCollection) {
+	private Bookings fromBookingResults(Collection<Booking> bookingCollection) {
 		return new Bookings(bookingCollection);
 	}
 
-	private Hotels fromResults(Collection<Hotel> hotelsCollection) {
+	private Hotels fromHotelResults(Collection<Hotel> hotelsCollection) {
 		return new Hotels(hotelsCollection);
 	}
 }

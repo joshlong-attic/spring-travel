@@ -3,7 +3,15 @@ package org.springframework.samples.travel.config.web;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
+import org.springframework.http.MediaType;
+import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.json.MappingJacksonHttpMessageConverter;
+import org.springframework.http.converter.xml.MarshallingHttpMessageConverter;
 import org.springframework.js.ajax.AjaxUrlBasedViewResolver;
+import org.springframework.oxm.Marshaller;
+import org.springframework.oxm.jaxb.Jaxb2Marshaller;
+import org.springframework.samples.travel.domain.*;
 import org.springframework.samples.travel.web.BookingFlowHandler;
 import org.springframework.web.servlet.config.annotation.*;
 import org.springframework.web.servlet.view.tiles2.TilesConfigurer;
@@ -17,14 +25,39 @@ import org.springframework.webflow.security.SecurityFlowExecutionListener;
 
 import javax.inject.Inject;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * Sets up all artifacts related to the web
  */
 @Configuration
 @EnableWebMvc
+//@Import(RestConfiguration.class)
 @ComponentScan({"org.springframework.samples.travel.rest", "org.springframework.samples.travel.web"})
 public class WebConfiguration extends WebMvcConfigurerAdapter {
+
+	private Class[] jaxbClasses = {Hotels.class, Bookings.class, Amenity.class, Booking.class, User.class, Hotel.class};
+
+	@Override
+	public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
+    	// json support
+		MappingJacksonHttpMessageConverter mappingJacksonHttpMessageConverter = new MappingJacksonHttpMessageConverter();
+		mappingJacksonHttpMessageConverter.setSupportedMediaTypes(Arrays.asList(MediaType.APPLICATION_JSON));
+		converters.add(mappingJacksonHttpMessageConverter);
+
+		// jaxb support
+		MarshallingHttpMessageConverter converter = new MarshallingHttpMessageConverter(this.marshaller());
+		converter.setSupportedMediaTypes(Arrays.asList(MediaType.APPLICATION_XML));
+		converters.add(converter);
+	}
+
+	@Bean
+	public Marshaller marshaller() {
+		Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
+		marshaller.setClassesToBeBound(this.jaxbClasses);
+		return marshaller;
+	}
+
 	@Override
 	public void configureDefaultServletHandling(DefaultServletHandlerConfigurer configurer) {
 		configurer.enable();

@@ -1,23 +1,5 @@
 package org.springframework.samples.travel;
 
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.oxm.Marshaller;
-import org.springframework.oxm.jaxb.Jaxb2Marshaller;
-import org.springframework.samples.travel.domain.Amenity;
-import org.springframework.samples.travel.domain.Booking;
-import org.springframework.samples.travel.domain.Hotel;
-import org.springframework.samples.travel.domain.User;
-import org.springframework.samples.travel.rest.RestConfiguration;
-
-import javax.xml.transform.Result;
-import javax.xml.transform.stream.StreamResult;
-import java.io.StringWriter;
-import java.math.BigDecimal;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashSet;
-
 public class BookingMarshallingTests {
 
 /*	public static void main(String args[]) throws Throwable {

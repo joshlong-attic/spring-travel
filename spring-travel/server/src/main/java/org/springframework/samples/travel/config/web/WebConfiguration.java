@@ -1,6 +1,5 @@
 package org.springframework.samples.travel.config.web;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -24,16 +23,16 @@ import java.util.Arrays;
  */
 @Configuration
 @EnableWebMvc
-@ComponentScan({"org.springframework.samples.travel.rest","org.springframework.samples.travel.web"})
-public class WebConfiguration  extends WebMvcConfigurerAdapter {
+@ComponentScan({"org.springframework.samples.travel.rest", "org.springframework.samples.travel.web"})
+public class WebConfiguration extends WebMvcConfigurerAdapter {
 	@Override
 	public void configureDefaultServletHandling(DefaultServletHandlerConfigurer configurer) {
-		 configurer.enable();
+		configurer.enable();
 	}
 
 	@Override
 	public void configureResourceHandling(ResourceConfigurer configurer) {
-		 configurer.addPathMapping("/resources/**").addResourceLocation("/resources/");
+		configurer.addPathMapping("/resources/**").addResourceLocation("/resources/");
 	}
 
 	@Override
@@ -45,10 +44,9 @@ public class WebConfiguration  extends WebMvcConfigurerAdapter {
 	}
 
 
-
 	@Inject private FlowExecutor flowExecutor;
 
-	@Inject  private FlowDefinitionRegistry flowDefinitionRegistry;
+	@Inject private FlowDefinitionRegistry flowDefinitionRegistry;
 
 	@Bean(name = "hotels/booking")
 	public BookingFlowHandler bookingFlowHandler() {

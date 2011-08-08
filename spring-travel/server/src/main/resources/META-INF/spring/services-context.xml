@@ -46,12 +46,22 @@
     <cache:annotation-driven cache-manager="gemfireCacheManager"/>
 
 
-<!--
+    <!-- Spring security -->
 
     <security:http>
         <security:form-login login-page="/users/login" login-processing-url="/users/login/authenticate" default-target-url="/hotels" authentication-failure-url="/users/login?login_error=1"/>
         <security:logout logout-url="/users/logout" logout-success-url="/users/logoutSuccess"/>
     </security:http>
+
+
+    <security:authentication-manager>
+        <security:authentication-provider>
+            <security:password-encoder hash="md5"/>
+            <security:jdbc-user-service data-source-ref="dataSource"/>
+        </security:authentication-provider>
+    </security:authentication-manager>
+
+<!--
 
     &lt;!&ndash;
               Define local authentication provider, a real app would use an external provider (JDBC, LDAP, CAS, etc): see import.sql for the nitty gritty DDL
@@ -64,14 +74,7 @@
                   josh/la
           &ndash;&gt;
 
-
-
-    <security:authentication-manager>
-        <security:authentication-provider>
-            <security:password-encoder hash="md5"/>
-            <security:jdbc-user-service data-source-ref="dataSource"/>
-        </security:authentication-provider>
-    </security:authentication-manager>-->
+-->
 
 
 

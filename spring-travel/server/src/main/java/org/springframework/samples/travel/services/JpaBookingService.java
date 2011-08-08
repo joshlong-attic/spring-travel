@@ -35,7 +35,7 @@ public class JpaBookingService implements BookingService {
 	/**
 	 * this is provided by the {@link org.springframework.orm.jpa.LocalEntityManagerFactoryBean} which is configured by the managing container (Spring).
 	 */
-	@PersistenceContext private EntityManager entityManager ;
+	@PersistenceContext private EntityManager entityManager;
 
 	/**
 	 * Region names
@@ -60,7 +60,7 @@ public class JpaBookingService implements BookingService {
 
 	@Transactional(readOnly = true)
 	public List<Booking> findBookings(String username) {
-		String query = String.format("select b from %s b where b.user.username = :username order by b.checkinDate", Booking.class.getName() );
+		String query = String.format("select b from %s b where b.user.username = :username order by b.checkinDate", Booking.class.getName());
 		return entityManager.createQuery(query, Booking.class).setParameter("username", username).getResultList();
 	}
 
@@ -70,7 +70,9 @@ public class JpaBookingService implements BookingService {
 
 		String pattern = getSearchPattern(criteria);
 
-		if(log.isDebugEnabled()) log.debug("searching hotels with search pattern: " + pattern);
+		if (log.isDebugEnabled()) {
+			log.debug("searching hotels with search pattern: " + pattern);
+		}
 
 		CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
 
@@ -98,8 +100,9 @@ public class JpaBookingService implements BookingService {
 
 		TypedQuery<Hotel> typedQuery = entityManager.createQuery(hotelCriteriaQuery);
 
-		if (criteria.getPage() > 0 && criteria.getPageSize() > 0)
+		if (criteria.getPage() > 0 && criteria.getPageSize() > 0) {
 			typedQuery.setMaxResults(criteria.getPageSize()).setFirstResult(criteria.getPage() * criteria.getPageSize());
+		}
 
 		List<Hotel> hotels = typedQuery.getResultList();
 
@@ -131,7 +134,7 @@ public class JpaBookingService implements BookingService {
 		entityManager.merge(booking);
 	}
 
-	@CacheEvict(BOOKING_REGION)
+	@CacheEvict(value = BOOKING_REGION, allEntries = true)
 	@Transactional
 	public void cancelBooking(Long id) {
 		Booking booking = entityManager.find(Booking.class, id);
@@ -150,16 +153,16 @@ public class JpaBookingService implements BookingService {
 		}
 	}
 
-	@Cacheable( value = USER_REGION ,key  = "#p0")
+	@Cacheable(value = USER_REGION, key = "#p0")
 	public User findUser(String username) {
-		String query = String.format( "select u from %s u where u.username = :username", User.class.getName())   ;
-		return  entityManager.createQuery(query ,User.class)
-						  .setParameter("username", username)
-						  .getSingleResult();
+		String query = String.format("select u from %s u where u.username = :username", User.class.getName());
+		return entityManager.createQuery(query, User.class)
+				       .setParameter("username", username)
+				       .getSingleResult();
 	}
 
 	@Override
-	@Cacheable( value = USER_REGION ,key  = "#p0")
+	@Cacheable(value = USER_REGION, key = "#p0")
 	public User login(String u, String pw) {
 		return findUser(u);
 	}

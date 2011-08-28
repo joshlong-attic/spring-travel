@@ -47,8 +47,7 @@ public class EmailNotificationService implements NotificationService {
 	private Log log = LogFactory.getLog(getClass());
 
 	@Inject BookingService bookingService;
-
-	@Inject NotificationGateway notificationGateway;
+     NotificationGateway notificationGateway;
 	@Inject VelocityEngine velocityEngine;
 	@Inject JavaMailSender mailSender;
 

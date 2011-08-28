@@ -77,6 +77,7 @@
 -->
 
 
+<!--
 
     <integration:channel id="enqueuedEmails"/>
     <integration:channel id="dequeuedEmails"/>
@@ -93,5 +94,6 @@
     </int-mail:header-enricher>
 
     <integration:service-activator input-channel="preparedEmails" ref="emailNotificationService" method="sendEmail"/>
+-->
 
 </beans>

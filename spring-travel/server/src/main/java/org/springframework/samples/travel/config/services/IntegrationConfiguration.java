@@ -3,7 +3,7 @@ package org.springframework.samples.travel.config.services;
 
 import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
-import org.springframework.amqp.rabbit.connection.SingleConnectionFactory;
+import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.rabbit.transaction.RabbitTransactionManager;
@@ -101,7 +101,7 @@ public class IntegrationConfiguration {
 
 	@Bean
 	public ConnectionFactory connectionFactory() {
-		SingleConnectionFactory connectionFactory = new SingleConnectionFactory(this.brokerUrl);
+		CachingConnectionFactory connectionFactory = new CachingConnectionFactory(this.brokerUrl);
 		connectionFactory.setUsername(this.username);
 		connectionFactory.setPassword(this.password);
 		return connectionFactory;

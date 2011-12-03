@@ -36,95 +36,115 @@ import java.util.List;
 @ComponentScan({"org.springframework.samples.travel.rest", "org.springframework.samples.travel.web"})
 public class WebConfiguration extends WebMvcConfigurerAdapter {
 
-	private Class[] jaxbClasses = {Hotels.class, Bookings.class, Amenity.class, Booking.class, User.class, Hotel.class};
+    private Class[] jaxbClasses = {Hotels.class, Bookings.class, Amenity.class, Booking.class, User.class, Hotel.class};
 
-	@Override
-	public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
-    	// json support
-		MappingJacksonHttpMessageConverter mappingJacksonHttpMessageConverter = new MappingJacksonHttpMessageConverter();
-		mappingJacksonHttpMessageConverter.setSupportedMediaTypes(Arrays.asList(MediaType.APPLICATION_JSON));
-		converters.add(mappingJacksonHttpMessageConverter);
+    @Override
+    public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
+        // json support
+        MappingJacksonHttpMessageConverter mappingJacksonHttpMessageConverter = new MappingJacksonHttpMessageConverter();
+        mappingJacksonHttpMessageConverter.setSupportedMediaTypes(Arrays.asList(MediaType.APPLICATION_JSON));
+        converters.add(mappingJacksonHttpMessageConverter);
 
-		// jaxb support
-		MarshallingHttpMessageConverter converter = new MarshallingHttpMessageConverter(this.marshaller());
-		converter.setSupportedMediaTypes(Arrays.asList(MediaType.APPLICATION_XML));
-		converters.add(converter);
-	}
+        // jaxb support
+        MarshallingHttpMessageConverter converter = new MarshallingHttpMessageConverter(this.marshaller());
+        converter.setSupportedMediaTypes(Arrays.asList(MediaType.APPLICATION_XML));
+        converters.add(converter);
+    }
 
-	@Bean
-	public Marshaller marshaller() {
-		Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
-		marshaller.setClassesToBeBound(this.jaxbClasses);
-		return marshaller;
-	}
+    @Bean
+    public Marshaller marshaller() {
+        Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
+        marshaller.setClassesToBeBound(this.jaxbClasses);
+        return marshaller;
+    }
 
-	@Override
-	public void configureDefaultServletHandling(DefaultServletHandlerConfigurer configurer) {
-		configurer.enable();
-	}
+    @Override
+    public void configureDefaultServletHandling(DefaultServletHandlerConfigurer configurer) {
+        configurer.enable();
+    }
 
-	@Override
-	public void configureResourceHandling(ResourceConfigurer configurer) {
-		configurer.addPathMapping("/resources/**").addResourceLocation("/resources/");
-	}
+    @Override
+    public void addViewControllers(ViewControllerRegistry registry) {
+        registry.addViewController("/users/login");
+        registry.addViewController("/users/logout");
+        registry.addViewController("/users/logoutSuccess");
+    }
 
-	@Override
-	public void configureViewControllers(ViewControllerConfigurer configurer) {
-		configurer.mapViewName("/", "home");
-		configurer.mapViewNameByConvention("/users/login");
-		configurer.mapViewNameByConvention("/users/logout");
-		configurer.mapViewNameByConvention("/users/logoutSuccess");
-	}
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
 
-
-	@Inject private FlowExecutor flowExecutor;
-
-	@Inject private FlowDefinitionRegistry flowDefinitionRegistry;
-
-	@Bean(name = "hotels/booking")
-	public BookingFlowHandler bookingFlowHandler() {
-		return new BookingFlowHandler();
-	}
-
-	@Bean
-	public AjaxUrlBasedViewResolver ajaxUrlBasedViewResolver() {
-		AjaxUrlBasedViewResolver aubvr = new AjaxUrlBasedViewResolver();
-		aubvr.setViewClass(FlowAjaxTilesView.class);
-		return aubvr;
-	}
-
-	@Bean
-	public TilesConfigurer tilesConfigurer() {
-		TilesConfigurer tilesConfigurer = new TilesConfigurer();
-		tilesConfigurer.setDefinitions(new String[]{"/WEB-INF*//**//*tiles.xml"});
-		return tilesConfigurer;
-	}
-
-	@Bean
-	public FlowHandlerMapping mapping() {
-		FlowHandlerMapping flowHandlerMapping = new FlowHandlerMapping();
-		flowHandlerMapping.setOrder(-1);
-		flowHandlerMapping.setFlowRegistry(flowDefinitionRegistry);
-		return flowHandlerMapping;
-	}
-
-	@Bean
-	public FlowHandlerAdapter flowHandlerAdapter() {
-		FlowHandlerAdapter fha = new FlowHandlerAdapter();
-		fha.setFlowExecutor(flowExecutor);
-		return fha;
-	}
-
-	@Bean
-	public MvcViewFactoryCreator viewFactoryCreator() {
-		MvcViewFactoryCreator mvcViewFactoryCreator = new MvcViewFactoryCreator();
-		mvcViewFactoryCreator.setViewResolvers(Arrays.asList(ajaxUrlBasedViewResolver()));
-		return mvcViewFactoryCreator;
-	}
+        registry.addResourceHandler("/resources/**").addResourceLocations("/resources/");
+       // registry.addResourceHandler("/users/**").addResourceLocations("classpath:/WEB-INF/views/users/");
+       registry.addResourceHandler("/").addResourceLocations("home");
+//        registry.addResourceHandler("/users/login").addResourceLocations("/users/login");
+    }
 
 
-	@Bean
-	public SecurityFlowExecutionListener securityFlowExecutionListener() {
-		return new SecurityFlowExecutionListener();
-	}
+    /*@Override
+     public void configureResourceHandling(ResourceConfigurer configurer) {
+         configurer.addPathMapping("/resources*/
+    /**
+     * ").addResourceLocation("/resources/");
+     * }
+     *
+     * @Override public void configureViewControllers(ViewControllerConfigurer configurer) {
+     * configurer.mapViewName("/", "home");
+     * configurer.mapViewNameByConvention("/users/login");
+     * configurer.mapViewNameByConvention("/users/logout");
+     * configurer.mapViewNameByConvention("/users/logoutSuccess");
+     * }
+     */
+
+    @Inject
+    private FlowExecutor flowExecutor;
+
+    @Inject
+    private FlowDefinitionRegistry flowDefinitionRegistry;
+
+    @Bean(name = "hotels/booking")
+    public BookingFlowHandler bookingFlowHandler() {
+        return new BookingFlowHandler();
+    }
+
+    @Bean
+    public AjaxUrlBasedViewResolver ajaxUrlBasedViewResolver() {
+        AjaxUrlBasedViewResolver aubvr = new AjaxUrlBasedViewResolver();
+        aubvr.setViewClass(FlowAjaxTilesView.class);
+        return aubvr;
+    }
+
+    @Bean
+    public TilesConfigurer tilesConfigurer() {
+        TilesConfigurer tilesConfigurer = new TilesConfigurer();
+        tilesConfigurer.setDefinitions(new String[]{"/WEB-INF*//**//*tiles.xml"});
+        return tilesConfigurer;
+    }
+
+    @Bean
+    public FlowHandlerMapping mapping() {
+        FlowHandlerMapping flowHandlerMapping = new FlowHandlerMapping();
+        flowHandlerMapping.setOrder(-1);
+        flowHandlerMapping.setFlowRegistry(flowDefinitionRegistry);
+        return flowHandlerMapping;
+    }
+
+    @Bean
+    public FlowHandlerAdapter flowHandlerAdapter() {
+        FlowHandlerAdapter fha = new FlowHandlerAdapter();
+        fha.setFlowExecutor(flowExecutor);
+        return fha;
+    }
+
+    @Bean
+    public MvcViewFactoryCreator viewFactoryCreator() {
+        MvcViewFactoryCreator mvcViewFactoryCreator = new MvcViewFactoryCreator();
+        mvcViewFactoryCreator.setViewResolvers(Arrays.asList(ajaxUrlBasedViewResolver()));
+        return mvcViewFactoryCreator;
+    }
+
+
+    @Bean
+    public SecurityFlowExecutionListener securityFlowExecutionListener() {
+        return new SecurityFlowExecutionListener();
+    }
 }

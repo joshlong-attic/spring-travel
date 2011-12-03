@@ -1,6 +1,7 @@
 package org.springframework.samples.travel.config.services;
 
 import com.gemstone.gemfire.cache.Cache;
+import com.gemstone.gemfire.cache.Region;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +17,6 @@ import org.springframework.samples.travel.domain.Hotel;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-import javax.inject.Inject;
 import javax.sql.DataSource;
 import java.sql.Driver;
 import java.util.HashMap;

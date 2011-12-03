@@ -12,20 +12,25 @@
         <org.springwebflow-version>2.2.1.RELEASE</org.springwebflow-version>
         <org.springsecurity-version>3.0.5.RELEASE</org.springsecurity-version>
         <org.aspectj-version>1.6.9</org.aspectj-version>
-<!--
-        <org.cloudfoundry-version>0.5.0-BUILD-SNAPSHOT</org.cloudfoundry-version>
--->
+        <!--
+                <org.cloudfoundry-version>0.5.0-BUILD-SNAPSHOT</org.cloudfoundry-version>
+        -->
         <org.slf4j-version>1.6.1</org.slf4j-version>
-        <org.springframework-version>3.1.0.M2</org.springframework-version>
-        <spring.integration.version>2.1.0.BUILD-SNAPSHOT</spring.integration.version>
-        <spring.integration.amqp.version>2.1.0.BUILD-SNAPSHOT</spring.integration.amqp.version>
+        <org.springframework-version>3.1.0.RC2</org.springframework-version>
+        <spring.integration.version>2.1.0.RC1</spring.integration.version>
+        <spring.integration.amqp.version>2.1.0.RC1</spring.integration.amqp.version>
     </properties>
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>org.springframework.data.gemfire</groupId>
-                <artifactId>spring-gemfire</artifactId>
-                <version>1.1.0.M1</version>
+                <groupId>com.gemstone.gemfire</groupId>
+                <artifactId>gemfire</artifactId>
+                <version>6.6.1</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.data</groupId>
+                <artifactId>spring-data-gemfire</artifactId>
+                <version>1.1.0.RC1</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.velocity</groupId>
@@ -42,11 +47,11 @@
                 <artifactId>spring-core</artifactId>
                 <version>${org.springframework-version}</version>
             </dependency>
-           <!-- <dependency>
+            <dependency>
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-jms</artifactId>
                 <version>${org.springframework-version}</version>
-            </dependency>-->
+            </dependency>
             <dependency>
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-context-support</artifactId>
@@ -62,11 +67,37 @@
                 <artifactId>spring-tx</artifactId>
                 <version>${org.springframework-version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.springframework.integration</groupId>
+                <artifactId>spring-integration-jms</artifactId>
+                <version>${spring.integration.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.integration</groupId>
+                <artifactId>spring-integration-mail</artifactId>
+                <version>${spring.integration.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.integration</groupId>
+                <artifactId>spring-integration-core</artifactId>
+                <version>${spring.integration.version}</version>
+            </dependency>
+
+
+            <dependency>
+                <groupId>org.springframework.integration</groupId>
+                <artifactId>spring-integration-amqp</artifactId>
+                <version>${spring.integration.version}</version>
+            </dependency>
+
         </dependencies>
 
     </dependencyManagement>
     <dependencies>
-
+        <dependency>
+            <groupId>com.gemstone.gemfire</groupId>
+            <artifactId>gemfire</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>javax.activation</groupId>
@@ -80,30 +111,25 @@
             <version>1.4.1</version>
         </dependency>
 
-  <dependency>
-            <groupId>org.springframework.data.gemfire</groupId>
-            <artifactId>spring-gemfire</artifactId>
-
+        <dependency>
+            <groupId>org.springframework.data</groupId>
+            <artifactId>spring-data-gemfire</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.integration</groupId>
             <artifactId>spring-integration-core</artifactId>
-            <version>${spring.integration.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.integration</groupId>
             <artifactId>spring-integration-jms</artifactId>
-            <version>${spring.integration.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.integration</groupId>
             <artifactId>spring-integration-mail</artifactId>
-            <version>${spring.integration.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.integration</groupId>
             <artifactId>spring-integration-amqp</artifactId>
-            <version>${spring.integration.version}</version>
         </dependency>
 
         <dependency>
@@ -348,7 +374,7 @@
         </dependency>
     </dependencies>
     <repositories>
-     <repository>
+        <repository>
             <id>org.springframework.maven.snapshot</id>
             <name>Spring Maven Snapshot Repository</name>
             <url>http://maven.springframework.org/snapshot</url>
@@ -359,7 +385,7 @@
                 <enabled>true</enabled>
             </snapshots>
         </repository>
-         <repository>
+        <repository>
             <id>org.springframework.maven.milestone</id>
             <name>Spring Maven Milestone Repository</name>
             <url>http://maven.springframework.org/milestone</url>
@@ -372,7 +398,8 @@
         </repository>
 
         <repository>
-            <id>dist-gemstone</id><url>http://dist.gemstone.com/maven/release/</url>
+            <id>dist-gemstone</id>
+            <url>http://dist.gemstone.com/maven/release/</url>
         </repository>
         <repository>
             <id>s2-release</id>

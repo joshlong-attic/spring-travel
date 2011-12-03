@@ -3,10 +3,8 @@ This application is meant to offer guidance on the assembly of various Spring fr
 It simulates an applicatoin that lets users search for hotels and then book them online. In so doing, it exercises core spring, the spring web stack, spring integration, gemfire, rabbitmq, jpa 2, and more.
 
 To run it, you need to install a few prerequisites:
- - rabbitmq-server
- - git clone and then build (mvn clean install) the spring integration amqp adapter in the sandbox (http://git.springsource.org/spring-integration/sandbox)
- - git clone and then build the latest Spring Gemfire code:  git@github.com:SpringSource/spring-gemfire.git
- - git clone and then build the latest Spring AMQP code git@github.com:SpringSource/spring-amqp.git
+
+ - rabbitmq-server (on OSX, assuming you've installed homebrew, just run brew install rabbitmq)
  - a mail server. At the moment, the application uses a simple mail server installed locally called Apache James. You may use this in your own testing, if you'd like.
    to get started:
    -- download Apache James 2.3.2 (NOT 3.0) from the website

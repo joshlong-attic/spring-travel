@@ -8,7 +8,6 @@
         xmlns:int-amqp="http://www.springframework.org/schema/integration/amqp"
         xmlns:integration="http://www.springframework.org/schema/integration"
         xmlns:util="http://www.springframework.org/schema/util"
-        xmlns:aop="http://www.springframework.org/schema/aop"
         xmlns:security="http://www.springframework.org/schema/security"
         xmlns:context="http://www.springframework.org/schema/context"
         xsi:schemaLocation="
@@ -16,12 +15,11 @@
         http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.1.xsd
         http://www.springframework.org/schema/gemfire http://www.springframework.org/schema/gemfire/spring-gemfire-1.1.xsd
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd
-		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.1.xsd
 		http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.0.4.xsd
 		http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache-3.1.xsd
-		http://www.springframework.org/schema/integration/mail http://www.springframework.org/schema/integration/mail/spring-integration-mail-2.0.xsd
-		http://www.springframework.org/schema/integration/amqp http://www.springframework.org/schema/integration/amqp/spring-integration-amqp-2.0.xsd
-		http://www.springframework.org/schema/integration http://www.springframework.org/schema/integration/spring-integration-2.0.xsd
+		http://www.springframework.org/schema/integration/mail http://www.springframework.org/schema/integration/mail/spring-integration-mail-2.1.xsd
+		http://www.springframework.org/schema/integration/amqp http://www.springframework.org/schema/integration/amqp/spring-integration-amqp-2.1.xsd
+		http://www.springframework.org/schema/integration http://www.springframework.org/schema/integration/spring-integration-2.1.xsd
      ">
 
 
@@ -37,15 +35,15 @@
 
 
     <!-- GEMFIRE-->
-    <gfe:cache properties-ref="props" id="c"/>
+<!--   -->
+
+      <gfe:cache properties-ref="props" id="c"/>
     <gfe:replicated-region id="usersRegion" cache-ref="c"/>
     <gfe:replicated-region id="hotelsRegion" cache-ref="c"/>
     <gfe:replicated-region id="bookingsRegion" cache-ref="c"/>
     <util:properties id="props" location="classpath:/gfe-cache.properties"/>
 
     <cache:annotation-driven cache-manager="gemfireCacheManager"/>
-
-
     <!-- Spring security -->
 
     <security:http>

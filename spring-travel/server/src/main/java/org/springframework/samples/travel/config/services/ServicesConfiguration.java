@@ -77,7 +77,7 @@ public class ServicesConfiguration {
 
 
 		String entityPackage = Hotel.class.getPackage().getName();
-		localContainerEntityManagerFactoryBean.setPackagesToScan(new String[]{entityPackage});
+		localContainerEntityManagerFactoryBean.setPackagesToScan( entityPackage );
 
 		// look ma, no persistence.xml !
 		return localContainerEntityManagerFactoryBean;

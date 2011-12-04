@@ -68,32 +68,14 @@ public class WebConfiguration extends WebMvcConfigurerAdapter {
         registry.addViewController("/users/login");
         registry.addViewController("/users/logout");
         registry.addViewController("/users/logoutSuccess");
+        registry.addViewController("/").setViewName("home");
     }
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-
         registry.addResourceHandler("/resources/**").addResourceLocations("/resources/");
-       // registry.addResourceHandler("/users/**").addResourceLocations("classpath:/WEB-INF/views/users/");
-       registry.addResourceHandler("/").addResourceLocations("home");
-//        registry.addResourceHandler("/users/login").addResourceLocations("/users/login");
     }
 
-
-    /*@Override
-     public void configureResourceHandling(ResourceConfigurer configurer) {
-         configurer.addPathMapping("/resources*/
-    /**
-     * ").addResourceLocation("/resources/");
-     * }
-     *
-     * @Override public void configureViewControllers(ViewControllerConfigurer configurer) {
-     * configurer.mapViewName("/", "home");
-     * configurer.mapViewNameByConvention("/users/login");
-     * configurer.mapViewNameByConvention("/users/logout");
-     * configurer.mapViewNameByConvention("/users/logoutSuccess");
-     * }
-     */
 
     @Inject
     private FlowExecutor flowExecutor;

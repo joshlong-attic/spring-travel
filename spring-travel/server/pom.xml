@@ -16,7 +16,7 @@
                 <org.cloudfoundry-version>0.5.0-BUILD-SNAPSHOT</org.cloudfoundry-version>
         -->
         <org.slf4j-version>1.6.1</org.slf4j-version>
-        <org.springframework-version>3.1.0.RC2</org.springframework-version>
+        <org.springframework-version>3.1.0.RC1</org.springframework-version>
         <spring.integration.version>2.1.0.RC1</spring.integration.version>
         <spring.integration.amqp.version>2.1.0.RC1</spring.integration.amqp.version>
     </properties>
@@ -84,6 +84,7 @@
             </dependency>
 
 
+
             <dependency>
                 <groupId>org.springframework.integration</groupId>
                 <artifactId>spring-integration-amqp</artifactId>
@@ -94,6 +95,12 @@
 
     </dependencyManagement>
     <dependencies>
+      <!--  <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-cache</artifactId>
+            <version>${org.springframework-version}</version>
+        </dependency>-->
+
         <dependency>
             <groupId>com.gemstone.gemfire</groupId>
             <artifactId>gemfire</artifactId>
@@ -164,6 +171,7 @@
             <artifactId>spring-orm</artifactId>
             <version>${org.springframework-version}</version>
         </dependency>
+
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-webmvc</artifactId>

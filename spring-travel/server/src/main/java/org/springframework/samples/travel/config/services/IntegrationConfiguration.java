@@ -6,17 +6,14 @@ import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.amqp.rabbit.transaction.RabbitTransactionManager;
 import org.springframework.amqp.support.converter.JsonMessageConverter;
 import org.springframework.amqp.support.converter.MessageConverter;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
-import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.ui.velocity.VelocityEngineFactoryBean;
 
 import javax.annotation.PostConstruct;
@@ -113,14 +110,14 @@ public class IntegrationConfiguration {
 	}
 
 	@Bean
-	public Queue customerQueue() {
+	public Queue notificationQueue() {
 		Queue q = new Queue(this.notificationQueueName);
 		amqpAdmin().declareQueue(q);
 		return q;
 	}
 
 	@Bean
-	public DirectExchange customerExchange() {
+	public DirectExchange notificationExchange() {
 		DirectExchange directExchange = new DirectExchange(notificationQueueName);
 		this.amqpAdmin().declareExchange(directExchange);
 		return directExchange;
@@ -128,7 +125,7 @@ public class IntegrationConfiguration {
 
 	@Bean
 	public Binding notificationBinding() {
-		return BindingBuilder.bind(customerQueue()).to(customerExchange()).with(this.notificationQueueName);
+		return BindingBuilder.bind(notificationQueue()).to(notificationExchange()).with(this.notificationQueueName);
 	}
 
 	/*

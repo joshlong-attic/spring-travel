@@ -86,6 +86,10 @@
 
     <int-amqp:inbound-channel-adapter channel="dequeuedEmails" queue-names="${amqp.notification.queue}" message-converter="jsonMessageConverter" connection-factory="connectionFactory"/>
 
+
+
+
+
     <int-mail:header-enricher input-channel="dequeuedEmails" output-channel="preparedEmails">
         <int-mail:from value="${notifications.email.from}"/>
     </int-mail:header-enricher>

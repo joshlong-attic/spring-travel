@@ -36,6 +36,12 @@ import java.util.List;
 @ComponentScan({"org.springframework.samples.travel.rest", "org.springframework.samples.travel.web"})
 public class WebConfiguration extends WebMvcConfigurerAdapter {
 
+    @Inject
+    private FlowDefinitionRegistry flowDefinitionRegistry;
+
+    @Inject
+    private FlowExecutor flowExecutor;
+
     private Class[] jaxbClasses = {Hotels.class, Bookings.class, Amenity.class, Booking.class, User.class, Hotel.class};
 
     @Override
@@ -63,6 +69,7 @@ public class WebConfiguration extends WebMvcConfigurerAdapter {
         configurer.enable();
     }
 
+
     @Override
     public void addViewControllers(ViewControllerRegistry registry) {
         registry.addViewController("/users/login");
@@ -75,13 +82,6 @@ public class WebConfiguration extends WebMvcConfigurerAdapter {
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/resources/**").addResourceLocations("/resources/");
     }
-
-
-    @Inject
-    private FlowExecutor flowExecutor;
-
-    @Inject
-    private FlowDefinitionRegistry flowDefinitionRegistry;
 
     @Bean(name = "hotels/booking")
     public BookingFlowHandler bookingFlowHandler() {

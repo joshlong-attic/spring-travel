@@ -7,9 +7,9 @@ package org.springframework.samples.travel.services;
 public interface NotificationService {
 
 
-	void sendConfirmationNotification( String userId, long bookingId);
+    void sendConfirmationNotification(String userId, long bookingId);
 
 
-	void sendReminderNotification(String userId, long bookingId);
+    void sendReminderNotification(String userId, long bookingId);
 
 }

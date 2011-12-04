@@ -8,23 +8,23 @@ import java.util.List;
 
 @XmlRootElement(name = "hotels")
 public class Hotels {
-	private List<Hotel> hotels;
+    private List<Hotel> hotels;
 
-	public Hotels() {
-		hotels = new ArrayList<Hotel>();
-	}
+    public Hotels() {
+        hotels = new ArrayList<Hotel>();
+    }
 
-	public Hotels(Collection<Hotel> hotels) {
-		this.hotels = new ArrayList<Hotel>(hotels);
-	}
+    public Hotels(Collection<Hotel> hotels) {
+        this.hotels = new ArrayList<Hotel>(hotels);
+    }
 
-	@XmlElement(name = "hotel", required = true, nillable = false)
+    @XmlElement(name = "hotel", required = true, nillable = false)
 //	@XmlElementWrapper
-	public List<Hotel> getHotels() {
-		return hotels;
-	}
+    public List<Hotel> getHotels() {
+        return hotels;
+    }
 
-	public void setHotels(List<Hotel> hotels) {
-		this.hotels = hotels;
-	}
+    public void setHotels(List<Hotel> hotels) {
+        this.hotels = hotels;
+    }
 }

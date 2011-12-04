@@ -41,135 +41,139 @@ import java.util.concurrent.ConcurrentHashMap;
 @Component
 public class EmailNotificationService implements NotificationService {
 
-	@Value("classpath:/templates/confirmation-html.vm")
-	private Resource htmlConfirmation;
+    @Value("classpath:/templates/confirmation-html.vm")
+    private Resource htmlConfirmation;
 
-	private Log log = LogFactory.getLog(getClass());
+    private Log log = LogFactory.getLog(getClass());
 
-	@Inject BookingService bookingService;
+    @Inject
+    BookingService bookingService;
 
-	@Inject NotificationGateway notificationGateway;
-	@Inject VelocityEngine velocityEngine;
-	@Inject JavaMailSender mailSender;
+    @Inject
+    NotificationGateway notificationGateway;
+    @Inject
+    VelocityEngine velocityEngine;
+    @Inject
+    JavaMailSender mailSender;
 
-	@Value("${notifications.confirmation.subject}")
-	private String confirmationSubject;
+    @Value("${notifications.confirmation.subject}")
+    private String confirmationSubject;
 
-	@Value("classpath:/templates/confirmation-txt.vm")
-	private Resource textConfirmation;
+    @Value("classpath:/templates/confirmation-txt.vm")
+    private Resource textConfirmation;
 
-	@Value("${notifications.email.from}")
-	private String emailFrom;
+    @Value("${notifications.email.from}")
+    private String emailFrom;
 
-	private Map<Resource, String> cachedTemplates = new ConcurrentHashMap<Resource, String>();
+    private Map<Resource, String> cachedTemplates = new ConcurrentHashMap<Resource, String>();
 
-	@PostConstruct
-	public void start() throws Exception {
-		// read the templates in as strings and cache the results
-		cachedTemplates.put(this.textConfirmation, readTemplate(textConfirmation));
-		cachedTemplates.put(this.htmlConfirmation, readTemplate(htmlConfirmation));
-	}
+    @PostConstruct
+    public void start() throws Exception {
+        // read the templates in as strings and cache the results
+        cachedTemplates.put(this.textConfirmation, readTemplate(textConfirmation));
+        cachedTemplates.put(this.htmlConfirmation, readTemplate(htmlConfirmation));
+    }
 
-	private String mergeTemplate(User user, Booking booking, String tplBody) throws Exception {
-		Map<String, Object> model = new HashMap<String, Object>();
-		model.put("name", user.getName());
-		model.put("email", user.getEmail());
-		model.put("bookingId", booking.getId());
-		model.put("bookingCheckin", booking.getCheckinDate());
-		model.put("hotelName", booking.getHotel().getName());
-		model.put("bookingCheckout", booking.getCheckoutDate());
-		return mergeTemplate(model, tplBody);
-	}
+    private String mergeTemplate(User user, Booking booking, String tplBody) throws Exception {
+        Map<String, Object> model = new HashMap<String, Object>();
+        model.put("name", user.getName());
+        model.put("email", user.getEmail());
+        model.put("bookingId", booking.getId());
+        model.put("bookingCheckin", booking.getCheckinDate());
+        model.put("hotelName", booking.getHotel().getName());
+        model.put("bookingCheckout", booking.getCheckoutDate());
+        return mergeTemplate(model, tplBody);
+    }
 
-	public String mergeTemplate(Map<String, Object> model, String template) throws Exception {
-		VelocityContext context = new VelocityContext();
-		for (String k : model.keySet())
-			context.put(k, model.get(k));
-		StringWriter stringWriter = new StringWriter();
-		this.velocityEngine.evaluate(context, stringWriter, "notifications", template);
-		IOUtils.closeQuietly(stringWriter);
-		return stringWriter.toString();
-	}
+    public String mergeTemplate(Map<String, Object> model, String template) throws Exception {
+        VelocityContext context = new VelocityContext();
+        for (String k : model.keySet())
+            context.put(k, model.get(k));
+        StringWriter stringWriter = new StringWriter();
+        this.velocityEngine.evaluate(context, stringWriter, "notifications", template);
+        IOUtils.closeQuietly(stringWriter);
+        return stringWriter.toString();
+    }
 
-	@SuppressWarnings("unchecked")
-	// called by Spring Integration as it dequeues mesages from the message broker
-	public void sendEmail(final Message<Object> inboundEmailFromMq) throws Exception {
+    @SuppressWarnings("unchecked")
+    // called by Spring Integration as it dequeues mesages from the message broker
+    public void sendEmail(final Message<Object> inboundEmailFromMq) throws Exception {
 
-		Map<String, String> ht = (Hashtable<String, String>) inboundEmailFromMq.getPayload();
+        Map<String, String> ht = (Hashtable<String, String>) inboundEmailFromMq.getPayload();
 
-		final String to = inboundEmailFromMq.getHeaders().get(MailHeaders.TO, String.class);
-		final String subject = inboundEmailFromMq.getHeaders().get(MailHeaders.SUBJECT, String.class);
+        final String to = inboundEmailFromMq.getHeaders().get(MailHeaders.TO, String.class);
+        final String subject = inboundEmailFromMq.getHeaders().get(MailHeaders.SUBJECT, String.class);
 
-		final String html = ht.get("html");
-		final String txt = ht.get("txt");
-
-
-		this.mailSender.send(new MimeMessagePreparator() {
-			@Override
-			public void prepare(MimeMessage mesg) throws Exception {
-				mesg.setFrom(new InternetAddress(emailFrom));
-
-				InternetAddress toAddress = new InternetAddress(to);
-				mesg.addRecipient(javax.mail.Message.RecipientType.TO, toAddress);
-				mesg.setSubject(subject);
-
-				Multipart mp = new MimeMultipart("alternative");
-
-				BodyPart textPart = new MimeBodyPart();
-				textPart.setContent(txt, "text/plain; charset=\"us-ascii\""); // sets type to "text/plain"
-				textPart.setHeader("Content-Transfer-Encoding", "7bit");
-
-				BodyPart htmlBP = new MimeBodyPart();
-				htmlBP.setContent(html, "text/html; charset=\"us-ascii\"");
-				htmlBP.setHeader("Content-Transfer-Encoding", "7bit");
-
-				mp.addBodyPart(textPart);
-				mp.addBodyPart(htmlBP);
-
-				mesg.setContent(mp);
-			}
-		});
-	}
-
-	@Override
-	public void sendReminderNotification(String userId, long bookingId) {
-		// todo
-	}
+        final String html = ht.get("html");
+        final String txt = ht.get("txt");
 
 
-	@Override
-	public void sendConfirmationNotification(String userId, long bookingId) {
-		User user = bookingService.findUser(userId);
-		Booking booking = bookingService.findBookingById(bookingId);
+        this.mailSender.send(new MimeMessagePreparator() {
+            @Override
+            public void prepare(MimeMessage mesg) throws Exception {
+                mesg.setFrom(new InternetAddress(emailFrom));
 
-		try {
-			String html = mergeTemplate(user, booking, cachedTemplates.get(htmlConfirmation));
-			String txt = mergeTemplate(user, booking, cachedTemplates.get(textConfirmation));
-			Map<String, String> m = new HashMap<String, String>();
-			m.put("html", html);
-			m.put("txt", txt);
+                InternetAddress toAddress = new InternetAddress(to);
+                mesg.addRecipient(javax.mail.Message.RecipientType.TO, toAddress);
+                mesg.setSubject(subject);
 
-			notificationGateway.sendNotification(user.getEmail(), this.confirmationSubject, m);
+                Multipart mp = new MimeMultipart("alternative");
+
+                BodyPart textPart = new MimeBodyPart();
+                textPart.setContent(txt, "text/plain; charset=\"us-ascii\""); // sets type to "text/plain"
+                textPart.setHeader("Content-Transfer-Encoding", "7bit");
+
+                BodyPart htmlBP = new MimeBodyPart();
+                htmlBP.setContent(html, "text/html; charset=\"us-ascii\"");
+                htmlBP.setHeader("Content-Transfer-Encoding", "7bit");
+
+                mp.addBodyPart(textPart);
+                mp.addBodyPart(htmlBP);
+
+                mesg.setContent(mp);
+            }
+        });
+    }
+
+    @Override
+    public void sendReminderNotification(String userId, long bookingId) {
+        // todo
+    }
 
 
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-	}
+    @Override
+    public void sendConfirmationNotification(String userId, long bookingId) {
+        User user = bookingService.findUser(userId);
+        Booking booking = bookingService.findBookingById(bookingId);
 
-	private String readTemplate(Resource resource) {
-		InputStream inputStream = null;
-		try {
-			inputStream = resource.getInputStream();
-			Assert.notNull(inputStream, "the inputStream shouldn't be null");
-			return IOUtils.toString(inputStream);
-		} catch (IOException e) {
-			log.error("couldn't read in the body of the HTML template ", e);
-			throw new RuntimeException(e);
-		} finally {
-			if (inputStream != null) {
-				IOUtils.closeQuietly(inputStream);
-			}
-		}
-	}
+        try {
+            String html = mergeTemplate(user, booking, cachedTemplates.get(htmlConfirmation));
+            String txt = mergeTemplate(user, booking, cachedTemplates.get(textConfirmation));
+            Map<String, String> m = new HashMap<String, String>();
+            m.put("html", html);
+            m.put("txt", txt);
+
+            notificationGateway.sendNotification(user.getEmail(), this.confirmationSubject, m);
+
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private String readTemplate(Resource resource) {
+        InputStream inputStream = null;
+        try {
+            inputStream = resource.getInputStream();
+            Assert.notNull(inputStream, "the inputStream shouldn't be null");
+            return IOUtils.toString(inputStream);
+        } catch (IOException e) {
+            log.error("couldn't read in the body of the HTML template ", e);
+            throw new RuntimeException(e);
+        } finally {
+            if (inputStream != null) {
+                IOUtils.closeQuietly(inputStream);
+            }
+        }
+    }
 }

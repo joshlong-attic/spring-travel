@@ -15,29 +15,29 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class BookingFlowHandler extends AbstractFlowHandler {
 
-	private static final String REDIRECT_URL = "contextRelative:/hotels/search";
+    private static final String REDIRECT_URL = "contextRelative:/hotels/search";
 
 
-	@Override
-	public String handleExecutionOutcome(FlowExecutionOutcome outcome, HttpServletRequest request, HttpServletResponse response) {
-		return REDIRECT_URL;
-	}
+    @Override
+    public String handleExecutionOutcome(FlowExecutionOutcome outcome, HttpServletRequest request, HttpServletResponse response) {
+        return REDIRECT_URL;
+    }
 
-	/**
-	 * when there's an exception in a web flow of the type {@link NoSuchFlowExecutionException which is caused when a session's expired and the Webflow's no longer being maintained},
-	 * redirect to {@code  /hotels/search } (the start of the flow).
-	 *
-	 * @param request  the HTTP request
-	 * @param response the HTTP response
-	 * @return the logical path to redirect to based on the inputs.
-	 */
-	@Override
-	public String handleException(FlowException e, HttpServletRequest request, HttpServletResponse response) {
-		if (e instanceof NoSuchFlowExecutionException) {
-			return REDIRECT_URL;
-		} else {
-			throw e;
-		}
-	}
+    /**
+     * when there's an exception in a web flow of the type {@link NoSuchFlowExecutionException which is caused when a session's expired and the Webflow's no longer being maintained},
+     * redirect to {@code  /hotels/search } (the start of the flow).
+     *
+     * @param request  the HTTP request
+     * @param response the HTTP response
+     * @return the logical path to redirect to based on the inputs.
+     */
+    @Override
+    public String handleException(FlowException e, HttpServletRequest request, HttpServletResponse response) {
+        if (e instanceof NoSuchFlowExecutionException) {
+            return REDIRECT_URL;
+        } else {
+            throw e;
+        }
+    }
 
 }

@@ -20,13 +20,13 @@ import java.util.Date;
  */
 public class DateFormatXmlAdapter extends XmlAdapter<String, Date> {
 
-	private DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S z");
+    private DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S z");
 
-	public Date unmarshal(String date) throws Exception {
-		return df.parse(date);
-	}
+    public Date unmarshal(String date) throws Exception {
+        return df.parse(date);
+    }
 
-	public String marshal(Date date) throws Exception {
-		return df.format(date);
-	}
+    public String marshal(Date date) throws Exception {
+        return df.format(date);
+    }
 }

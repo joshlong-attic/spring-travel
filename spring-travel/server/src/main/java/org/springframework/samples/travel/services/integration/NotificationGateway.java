@@ -9,9 +9,9 @@ import javax.mail.internet.MimeMessage;
 import java.util.Map;
 
 public interface NotificationGateway {
-		void sendNotification(
-			                     @Header(MailHeaders.TO) String  destinationAddresses,
-			                     @Header(MailHeaders.SUBJECT) String subject,
-			                     @Payload Map<String,String> body );
+    void sendNotification(
+            @Header(MailHeaders.TO) String destinationAddresses,
+            @Header(MailHeaders.SUBJECT) String subject,
+            @Payload Map<String, String> body);
 
 }

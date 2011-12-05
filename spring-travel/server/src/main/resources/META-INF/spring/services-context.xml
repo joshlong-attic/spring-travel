@@ -33,9 +33,7 @@
 
 
     <!-- GEMFIRE-->
-<!--   -->
-
-      <gfe:cache properties-ref="props" id="c"/>
+    <gfe:cache properties-ref="props" id="c"/>
     <gfe:replicated-region id="usersRegion" cache-ref="c"/>
     <gfe:replicated-region id="hotelsRegion" cache-ref="c"/>
     <gfe:replicated-region id="bookingsRegion" cache-ref="c"/>
@@ -43,26 +41,42 @@
 
     <cache:annotation-driven cache-manager="gemfireCacheManager"/>
 
-
-
     <integration:channel id="enqueuedEmails"/>
     <integration:channel id="dequeuedEmails"/>
     <integration:channel id="preparedEmails"/>
+    <integration:channel id="fromGateway" />
+    <integration:channel id="toMessageBroker" />
 
-    <integration:gateway service-interface="org.springframework.samples.travel.services.integration.NotificationGateway" default-request-channel="enqueuedEmails"/>
+    <integration:gateway service-interface="org.springframework.samples.travel.services.integration.NotificationGateway" default-request-channel="enqueuedEmails" />
 
-    <int-amqp:outbound-channel-adapter channel="enqueuedEmails" exchange-name="${amqp.notification.exchange}" routing-key="${amqp.notification.exchange}" amqp-template="rabbitTemplate"/>
+    <integration:transformer  input-channel="enqueuedEmails" ref="transformerGatewayMessageToAmqpPayload" output-channel="toMessageBroker" />
 
-    <int-amqp:inbound-channel-adapter channel="dequeuedEmails" queue-names="${amqp.notification.queue}" message-converter="jsonMessageConverter" connection-factory="connectionFactory"/>
+    <int-amqp:outbound-channel-adapter
+            channel="toMessageBroker"
+            exchange-name="${amqp.notification.exchange}"
+            routing-key="${amqp.notification.exchange}"
+            amqp-template="rabbitTemplate"
+            mapped-request-headers="*"
+            />
 
-
-
-
+    <int-amqp:inbound-channel-adapter
+        channel="dequeuedEmails"
+        queue-names="${amqp.notification.queue}"
+        connection-factory="connectionFactory"
+        acknowledge-mode="AUTO"
+        message-converter="jsonMessageConverter"
+        mapped-request-headers="*"
+    />
 
     <int-mail:header-enricher input-channel="dequeuedEmails" output-channel="preparedEmails">
         <int-mail:from value="${notifications.email.from}"/>
+        <int-mail:to expression="payload['mail_to']"/>
+        <int-mail:subject expression="payload['mail_subject']"/>
     </int-mail:header-enricher>
 
+
     <integration:service-activator input-channel="preparedEmails" ref="emailNotificationService" method="sendEmail"/>
+
+    <integration:service-activator input-channel="errrorChannel" ref="errorMessageHandler"/>
 
 </beans>

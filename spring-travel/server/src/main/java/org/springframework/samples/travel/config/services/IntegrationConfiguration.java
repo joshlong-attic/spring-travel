@@ -1,6 +1,8 @@
 package org.springframework.samples.travel.config.services;
 
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
@@ -11,9 +13,17 @@ import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.core.env.Environment;
+import org.springframework.integration.*;
+import org.springframework.integration.Message;
+import org.springframework.integration.core.MessageHandler;
+import org.springframework.integration.mail.MailHeaders;
+import org.springframework.integration.transformer.Transformer;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
+import org.springframework.samples.travel.services.BookingService;
+import org.springframework.samples.travel.services.integration.NotificationGateway;
 import org.springframework.ui.velocity.VelocityEngineFactoryBean;
 
 import javax.annotation.PostConstruct;
@@ -25,6 +35,7 @@ import java.util.Properties;
 @Configuration
 @PropertySource("classpath:/ds.standalone.properties")
 public class IntegrationConfiguration {
+
 
     @Inject
     private Environment environment;
@@ -52,10 +63,12 @@ public class IntegrationConfiguration {
         notificationQueueName = environment.getProperty("amqp.notification.queue");
     }
 
+
     @Bean
     public VelocityEngineFactoryBean velocityEngineFactoryBean() {
         return new VelocityEngineFactoryBean();
     }
+
 
     @Bean
     public Map<String, String> emailProperties() {
@@ -67,7 +80,6 @@ public class IntegrationConfiguration {
 
     @Bean
     public JavaMailSender javaMailSender() {
-
 
         JavaMailSenderImpl javaMailSender = new JavaMailSenderImpl();
         javaMailSender.setHost(this.emailHost);
@@ -129,11 +141,52 @@ public class IntegrationConfiguration {
         return BindingBuilder.bind(notificationQueue()).to(notificationExchange()).with(this.notificationQueueName);
     }
 
-    /*
-     @Bean
-     public PlatformTransactionManager amqpTransactionManager() throws Exception {
-         return new RabbitTransactionManager(this.connectionFactory());
-     }*/
+    private Log log = LogFactory.getLog(getClass());
 
+    @Bean
+    public MessageHandler errorMessageHandler() {
+        MessageHandler messageHandler = new MessageHandler() {
+            @Override
+            public void handleMessage(Message<?> message) throws MessagingException {
+                log.error("Inside the Error Handler. Something has Occurred");
+                for (String k : message.getHeaders().keySet())
+                    log.error(String.format("{'%s':'%s'}", k, message.getHeaders().get(k)));
+                log.error(message.getPayload().toString());
+                log.error("------------------------------------------------------------------");
+            }
+        };
 
+        return messageHandler;
+    }
+
+    @Bean
+    public Transformer transformerGatewayMessageToAmqpPayload() {
+        return new Transformer() {
+            @Override
+            public Message<?> transform(Message<?> message) {
+                MessageHeaders msgHeaders = message.getHeaders();
+
+                Map<String, Object> body = (Map<String, Object>) message.getPayload();
+                for(String headerName : new String []{ MailHeaders.TO,  MailHeaders.SUBJECT} )
+                    body.put( headerName,  msgHeaders.get(headerName));
+
+                return message;
+            }
+        };
+    }
+
+   /* static public void main(String args[]) throws Exception {
+        ClassPathXmlApplicationContext ac = new ClassPathXmlApplicationContext("/META-INF/spring/services-context.xml");
+
+        NotificationGateway notificationGateway = ac.getBean(NotificationGateway.class);
+
+        BookingService bookingService = ac.getBean(BookingService.class);
+
+        Map<String, String> content = new HashMap<String, String>();
+        content.put("html", "<P><B>The html content</b></P>");
+        content.put("txt", "the text content");
+
+        notificationGateway.sendNotification("starbuxman@gmail.com", "a test subject", content);
+
+    }*/
 }

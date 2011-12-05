@@ -6,9 +6,11 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.integration.Message;
+import org.springframework.integration.core.MessageHandler;
 import org.springframework.integration.mail.MailHeaders;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessagePreparator;
@@ -20,7 +22,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
 import javax.annotation.PostConstruct;
-import javax.inject.Inject;
 import javax.mail.BodyPart;
 import javax.mail.Multipart;
 import javax.mail.internet.InternetAddress;
@@ -46,15 +47,17 @@ public class EmailNotificationService implements NotificationService {
 
     private Log log = LogFactory.getLog(getClass());
 
-    @Inject
-    BookingService bookingService;
+    @Autowired
+    private BookingService bookingService;
 
-    @Inject
-    NotificationGateway notificationGateway;
-    @Inject
-    VelocityEngine velocityEngine;
-    @Inject
-    JavaMailSender mailSender;
+    @Autowired
+    private NotificationGateway notificationGateway;
+
+    @Autowired
+    private VelocityEngine velocityEngine;
+
+    @Autowired
+    private JavaMailSender mailSender;
 
     @Value("${notifications.confirmation.subject}")
     private String confirmationSubject;
@@ -95,17 +98,27 @@ public class EmailNotificationService implements NotificationService {
         return stringWriter.toString();
     }
 
+
+    @Autowired
+    @Qualifier("errorMessageHandler")
+    private MessageHandler messageHandler;
+
+
     @SuppressWarnings("unchecked")
-    // called by Spring Integration as it dequeues mesages from the message broker
     public void sendEmail(final Message<Object> inboundEmailFromMq) throws Exception {
 
-        Map<String, String> ht = (Hashtable<String, String>) inboundEmailFromMq.getPayload();
+        messageHandler.handleMessage(inboundEmailFromMq);
+
+        Map<String, String> templates = (Hashtable<String, String>) inboundEmailFromMq.getPayload();
 
         final String to = inboundEmailFromMq.getHeaders().get(MailHeaders.TO, String.class);
         final String subject = inboundEmailFromMq.getHeaders().get(MailHeaders.SUBJECT, String.class);
 
-        final String html = ht.get("html");
-        final String txt = ht.get("txt");
+
+        log.info("sending: {to: '" + to + "', subject: '" + subject + "'}");
+
+        final String html = templates.get("html");
+        final String txt = templates.get("txt");
 
 
         this.mailSender.send(new MimeMessagePreparator() {
@@ -123,12 +136,12 @@ public class EmailNotificationService implements NotificationService {
                 textPart.setContent(txt, "text/plain; charset=\"us-ascii\""); // sets type to "text/plain"
                 textPart.setHeader("Content-Transfer-Encoding", "7bit");
 
-                BodyPart htmlBP = new MimeBodyPart();
-                htmlBP.setContent(html, "text/html; charset=\"us-ascii\"");
-                htmlBP.setHeader("Content-Transfer-Encoding", "7bit");
+                BodyPart htmlBodyPart = new MimeBodyPart();
+                htmlBodyPart.setContent(html, "text/html; charset=\"us-ascii\"");
+                htmlBodyPart.setHeader("Content-Transfer-Encoding", "7bit");
 
                 mp.addBodyPart(textPart);
-                mp.addBodyPart(htmlBP);
+                mp.addBodyPart(htmlBodyPart);
 
                 mesg.setContent(mp);
             }

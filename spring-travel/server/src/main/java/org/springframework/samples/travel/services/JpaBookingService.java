@@ -7,11 +7,13 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.samples.travel.domain.Booking;
 import org.springframework.samples.travel.domain.Hotel;
 import org.springframework.samples.travel.domain.User;
+import org.springframework.samples.travel.services.integration.EmailNotificationService;
 import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
@@ -46,6 +48,9 @@ public class JpaBookingService implements BookingService {
     static final private String USER_REGION = "usersRegion";
 
 
+    @Inject
+    private EmailNotificationService emailNotificationService ;
+
     private Log log = LogFactory.getLog(getClass());
 
     @Transactional(readOnly = true)
@@ -64,6 +69,7 @@ public class JpaBookingService implements BookingService {
         String query = String.format("select b from %s b where b.user.username = :username order by b.checkinDate", Booking.class.getName());
         return entityManager.createQuery(query, Booking.class).setParameter("username", username).getResultList();
     }
+
 
     @Transactional(readOnly = true)
     public List<Hotel> findHotels(SearchCriteria criteria) {
@@ -110,12 +116,12 @@ public class JpaBookingService implements BookingService {
         return hotels;
     }
 
-
     @Cacheable(value = HOTELS_REGION)
     @Transactional(readOnly = true)
     public Hotel findHotelById(Long id) {
         return entityManager.find(Hotel.class, id);
     }
+
 
     @Cacheable(value = BOOKING_REGION, key = "#p0")
     @Transactional
@@ -127,11 +133,13 @@ public class JpaBookingService implements BookingService {
         return booking;
     }
 
-
     @Override
     @Transactional
     public void persistBooking(Booking booking) {
         entityManager.merge(booking);
+        // this will fire a notification to a message queue which will then be handled (later)
+        // by a Spring Integration flow that'll eventually send out a notification email
+        emailNotificationService.sendConfirmationNotification( booking.getUser().getUsername(), booking.getId());
     }
 
     @CacheEvict(value = BOOKING_REGION, allEntries = true)

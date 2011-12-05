@@ -62,26 +62,26 @@ public class ServicesConfiguration {
 
         Map<String, String> props = new HashMap<String, String>();
 
-
         // validate or create
         props.put("hibernate.hbm2ddl.auto", "validate"); // it will attempt to run import.sql, by default! be carefyl
 
         if (log.isDebugEnabled()) {
-            log.debug("the 'hibernate.hbm2ddl.auto' property was set to 'validate,' which means it will not attempt to run 'import.sql' by itself. " +
-                    "You should manually run the statements in 'import.sql,' yourself to ensure correct operating conditions for the application.");
+            log.debug("the 'hibernate.hbm2ddl.auto' property was set to 'validate,' " +
+                    "which means it will not attempt to run 'import.sql' by itself. " +
+                    "You should manually run the statements in 'import.sql,' yourself " +
+                    "to ensure correct operating conditions for the application.");
         }
 
-        LocalContainerEntityManagerFactoryBean localContainerEntityManagerFactoryBean = new LocalContainerEntityManagerFactoryBean();
-        localContainerEntityManagerFactoryBean.setJpaVendorAdapter(jpaVendorAdapter);
-        localContainerEntityManagerFactoryBean.setDataSource(dataSource());
-        localContainerEntityManagerFactoryBean.setJpaPropertyMap(props);
-
+        LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
+        em.setJpaVendorAdapter(jpaVendorAdapter);
+        em.setDataSource(dataSource());
+        em.setJpaPropertyMap(props);
 
         String entityPackage = Hotel.class.getPackage().getName();
-        localContainerEntityManagerFactoryBean.setPackagesToScan(entityPackage);
+        em.setPackagesToScan(entityPackage);
 
         // look ma, no persistence.xml !
-        return localContainerEntityManagerFactoryBean;
+        return em;
     }
 
 

@@ -15,18 +15,6 @@
 
     <bean class="org.springframework.samples.travel.config.web.WebConfiguration"/>
 
-
-<!--
-    &lt;!&ndash; Configures the Spring MVC @Controller programming model &ndash;&gt;
-
-    &lt;!&ndash; Handles HTTP GET requests for /resources/** by efficiently serving up static resources in the ${webappRoot}/resources directory &ndash;&gt;
-    <mvc:resources mapping="/resources/**" location="/resources/"/>
-
-    &lt;!&ndash; Configures a handler for serving static resources by forwarding to the Servlet container's default Servlet. &ndash;&gt;
-    <mvc:default-servlet-handler/>
--->
-
-    <!-- Executes flows: the entry point into the Spring Web Flow system -->
     <wf:flow-executor id="flowExecutor">
         <wf:flow-execution-listeners>
             <!--<wf:listener ref="jpaFlowExecutionListener"/>-->
@@ -41,18 +29,6 @@
 
     <!-- Plugs in a custom creator for Web Flow views -->
     <wf:flow-builder-services id="flowBuilderServices" view-factory-creator="viewFactoryCreator" development="true"/>
-
-
-    <!--&lt;!&ndash; Configures transaction management around @Transactional components &ndash;&gt;-->
-
-    <!--&lt;!&ndash; Imports the application controllers that process client requests &ndash;&gt;-->
-    <!--<mvc:view-controller path="/" view-name="home"/>-->
-
-    <!--&lt;!&ndash; Maps '/users/login' requests to the 'users/login' view &ndash;&gt;-->
-    <!--<mvc:view-controller path="/users/login"/>-->
-    <!--<mvc:view-controller path="/users/logout"/>-->
-    <!--<mvc:view-controller path="/users/logoutSuccess"/>-->
-
 
 
 
